@@ -1,0 +1,32 @@
+# ═══════════════════════════════════════════
+# Portal Cateno — Docker Compose (desenvolvimento)
+# ═══════════════════════════════════════════
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: portal-cateno-db
+    environment:
+      POSTGRES_USER: cateno
+      POSTGRES_PASSWORD: cateno_dev
+      POSTGRES_DB: portal_cateno
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  langflow:
+    image: langflowai/langflow:latest
+    container_name: portal-cateno-langflow
+    ports:
+      - '7860:7860'
+    volumes:
+      - langflow_data:/app/langflow
+    environment:
+      - LANGFLOW_DATABASE_URL=sqlite:///./langflow/langflow.db
+    profiles:
+      - ai # Sobe apenas com: docker compose --profile ai up -d
+
+volumes:
+  postgres_data:
+  langflow_data:

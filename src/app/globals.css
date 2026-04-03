@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+@import '../styles/design-tokens.css';
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--cateno-font-sans);
+  --font-mono: var(--cateno-font-mono);
+
+  /* ── Cateno Brand Colors ── */
+  --color-cateno-primary: var(--cateno-primary);
+  --color-cateno-primary-light: var(--cateno-primary-light);
+  --color-cateno-primary-dark: var(--cateno-primary-dark);
+  --color-cateno-logo-accent: var(--cateno-logo-accent);
+
+  /* ── Semantic ── */
+  --color-cateno-success: var(--cateno-success);
+  --color-cateno-warning: var(--cateno-warning);
+  --color-cateno-error: var(--cateno-error);
+  --color-cateno-info: var(--cateno-info);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f172a;
+    --foreground: #f8fafc;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--cateno-font-sans);
+}

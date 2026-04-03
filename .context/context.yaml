@@ -1,0 +1,54 @@
+name: Portal Cateno
+description: >
+  Portal centralizado de aplicações da Cateno com visão em cards e interface conversacional
+  (CatIA) para navegação por linguagem natural. Frontend unificado para todos os microsserviços.
+version: 0.1.0
+type: web-frontend
+status: development
+
+tech_stack:
+  framework: Next.js 15 (App Router)
+  language: TypeScript 5
+  runtime: Node.js 20 LTS
+  styling: Tailwind CSS 3
+  ui_library: shadcn/ui
+  auth: NextAuth.js 5
+  orm: Prisma 6
+  validation: Zod 3
+  testing: Vitest + Testing Library
+  ai: Vercel AI SDK
+  state: Zustand
+
+architecture:
+  style: Monolith modular (Next.js fullstack)
+  patterns:
+    - Server Components (default)
+    - Server Actions (mutations)
+    - RBAC (Role-Based Access Control)
+    - Spec-Driven Development (SDD)
+    - PREVC Workflow
+  principles:
+    - Nada é desenvolvido sem SPEC aprovada
+    - Rastreabilidade bidirecional (SPEC ↔ Artefatos)
+    - Testes antes de implementação
+    - Conventional Commits
+
+governance:
+  branching: Git Flow (feat/, fix/, hotfix/)
+  prefix: PC
+  spec_workflow: backlog → active → archive
+  merge_strategy: Squash merge
+  code_review: Obrigatório
+  test_coverage_min: 80%
+
+localization:
+  ui_language: pt-BR
+  code_language: en
+  date_format: dd/mm/yyyy (UI) | ISO 8601 (internal)
+  timezone: America/Sao_Paulo
+  currency: BRL
+
+team:
+  - name: Patrick Iarrocheski
+    role: Tech Lead / Product Owner
+    email: patrick.iarrocheski@cateno.com.br
