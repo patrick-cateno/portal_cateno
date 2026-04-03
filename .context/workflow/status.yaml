@@ -1,0 +1,19 @@
+project:
+  name: "Portal Cateno"
+  scale: LARGE
+  started: "2026-04-03T12:09:58.860Z"
+  current_phase: P
+
+phases:
+  P:
+    status: in_progress
+    started_at: "2026-04-03T12:09:58.860Z"
+  R:
+    status: pending
+  E:
+    status: pending
+  V:
+    status: pending
+  C:
+    status: pending
+
