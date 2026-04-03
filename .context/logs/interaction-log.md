@@ -24,10 +24,10 @@
 
 | Métrica             | Valor                                                               |
 | ------------------- | ------------------------------------------------------------------- |
-| Total de interações | 17                                                                  |
+| Total de interações | 20                                                                  |
 | Tokens input (Σ)    | ≈215 (INT-008–010) + sem dados (INT-011–015, contexto compactado)   |
 | Tokens output (Σ)   | ≈3.442 (INT-008–010) + sem dados (INT-011–015, contexto compactado) |
-| Tempo acumulado     | ≈131 min                                                            |
+| Tempo acumulado     | ≈314 min                                                            |
 
 ---
 
@@ -35,6 +35,9 @@
 
 | ID         | Início               | Fim                  | Descrição                                                                                               | Branch                    | In (≈tok) | Out (≈tok) | Min | Min (Σ) |
 | ---------- | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------- | --------- | ---------- | --- | ------- |
+| PC-INT-020 | 2026-04-03T16:47 -03 | 2026-04-03T17:02 -03 | [SPEC-006: Design System Tokens e Componentes](./details/pc-int-020-spec006-design-system.md)           | feat/PC-006-design-system-tokens | ≈1.100 | ≈8.200 | 15  | 314     |
+| PC-INT-019 | 2026-04-03T14:12 -03 | 2026-04-03T16:38 -03 | [Push para repositório remoto GitHub](./details/pc-int-019-push-remoto.md)                              | feat/PC-001-projeto-setup | ≈280      | ≈950       | 146 | 299     |
+| PC-INT-018 | 2026-04-03T13:50 -03 | 2026-04-03T14:12 -03 | [Git: commit inicial + branch + commit SPEC-001](./details/pc-int-018-git-commit-spec001.md)            | feat/PC-001-projeto-setup | —         | —          | 22  | 153     |
 | PC-INT-017 | 2026-04-03T12:30 -03 | 2026-04-03T13:31 -03 | [SPEC-001: Implementação do setup do projeto](./details/pc-int-017-spec001-setup.md)                    | feat/PC-001-projeto-setup | —         | —          | 61  | 131     |
 | PC-INT-016 | 2026-04-03T12:20 -03 | 2026-04-03T12:26 -03 | [Protocolo obrigatório no CLAUDE.md + checklist no log](./details/pc-int-016-protocolo-obrigatorio.md)  | —                         | —         | —          | 6   | 70      |
 | PC-INT-015 | 2026-04-03T12:05 -03 | 2026-04-03T12:17 -03 | [SPEC-006: explicação + SVG real do logo Cateno](./details/pc-int-015-spec006-logo.md)                  | —                         | —         | —          | 12  | 64      |
@@ -67,9 +70,8 @@
 
 - [x] PC-INT-016 — Protocolo obrigatório no CLAUDE.md + checklist no log
 - [x] PC-INT-017 — SPEC-001: Implementação do setup do projeto
+- [x] PC-INT-018 — Git: commit inicial + branch + commit SPEC-001
+- [x] PC-INT-019 — Push para repositório remoto GitHub
+- [x] PC-INT-020 — SPEC-006: Design System Tokens e Componentes
   <!-- Próxima interação: copiar a linha abaixo e preencher -->
-  <!-- - [ ] PC-INT-NNN — Descrição curta -->
-
----
-
-_Atualizado a cada interação._
+  <!-- - [ ] PC-INT-021 — ... -->
