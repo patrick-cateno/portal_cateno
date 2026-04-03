@@ -1,3 +1,6 @@
+export { Avatar, avatarVariants } from './avatar';
+export type { AvatarProps } from './avatar';
+
 export { Badge, badgeVariants } from './badge';
 export type { BadgeProps } from './badge';
 
@@ -26,5 +29,17 @@ export type { InputProps } from './input';
 export { Tabs, TabsContent } from './tabs';
 export type { TabsProps, TabsContentProps } from './tabs';
 
+export { Tooltip } from './tooltip';
+export type { TooltipProps } from './tooltip';
+
 export { Toggle } from './toggle';
 export type { ToggleProps } from './toggle';
+
+export {
+  Dropdown,
+  DropdownTrigger,
+  DropdownContent,
+  DropdownItem,
+  DropdownSeparator,
+  DropdownLabel,
+} from './dropdown';
