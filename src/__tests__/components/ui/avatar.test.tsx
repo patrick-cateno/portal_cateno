@@ -22,7 +22,8 @@ describe('Avatar', () => {
     render(<Avatar src="https://example.com/avatar.jpg" name="Test User" />);
     const img = screen.getByAltText('Test User');
     expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute('src', 'https://example.com/avatar.jpg');
+    // next/image transforms src to /_next/image?url=...
+    expect(img.getAttribute('src')).toContain('avatar.jpg');
   });
 
   it('should apply size variants', () => {
