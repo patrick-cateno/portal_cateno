@@ -24,10 +24,10 @@
 
 | Métrica             | Valor                                                               |
 | ------------------- | ------------------------------------------------------------------- |
-| Total de interações | 22                                                                  |
+| Total de interações | 23                                                                  |
 | Tokens input (Σ)    | ≈215 (INT-008–010) + sem dados (INT-011–015, contexto compactado)   |
 | Tokens output (Σ)   | ≈3.442 (INT-008–010) + sem dados (INT-011–015, contexto compactado) |
-| Tempo acumulado     | ≈369 min                                                            |
+| Tempo acumulado     | ≈406 min                                                            |
 
 ---
 
@@ -35,6 +35,7 @@
 
 | ID         | Início               | Fim                  | Descrição                                                                                               | Branch                    | In (≈tok) | Out (≈tok) | Min | Min (Σ) |
 | ---------- | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------- | --------- | ---------- | --- | ------- |
+| PC-INT-023 | 2026-04-03T21:41 -03 | 2026-04-03T22:18 -03 | [SPEC-003: Layout Principal e Navegacao](./details/pc-int-023-spec003-layout.md)                         | feat/PC-003-layout-navegacao | ≈3.000 | ≈15.000 | 37  | 406     |
 | PC-INT-022 | 2026-04-03T20:19 -03 | 2026-04-03T21:12 -03 | [SPEC-002: Sistema de Autenticacao Keycloak + NextAuth v5](./details/pc-int-022-spec002-autenticacao.md) | feat/PC-002-autenticacao  | ≈2.500 | ≈12.000 | 53  | 369     |
 | PC-INT-021 | 2026-04-03T20:12 -03 | 2026-04-03T20:14 -03 | [Git: commit SPEC-006 + fix hooks condicionais](./details/pc-int-021-commit-spec006.md)                 | feat/PC-006-design-system-tokens | ≈200   | ≈400   | 2   | 316     |
 | PC-INT-020 | 2026-04-03T16:47 -03 | 2026-04-03T17:02 -03 | [SPEC-006: Design System Tokens e Componentes](./details/pc-int-020-spec006-design-system.md)           | feat/PC-006-design-system-tokens | ≈1.100 | ≈8.200 | 15  | 314     |
@@ -77,5 +78,6 @@
 - [x] PC-INT-020 — SPEC-006: Design System Tokens e Componentes
 - [x] PC-INT-021 — Git: commit SPEC-006 + fix hooks condicionais
 - [x] PC-INT-022 — SPEC-002: Sistema de Autenticacao Keycloak + NextAuth v5
+- [x] PC-INT-023 — SPEC-003: Layout Principal e Navegacao
   <!-- Próxima interação: copiar a linha abaixo e preencher -->
-  <!-- - [ ] PC-INT-023 — ... -->
+  <!-- - [ ] PC-INT-024 — ... -->
