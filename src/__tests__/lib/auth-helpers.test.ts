@@ -1,4 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, type Mock } from 'vitest';
+import type { Session } from 'next-auth';
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -28,7 +29,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { requireAuth, requireRole, requirePermission } from '@/lib/auth-helpers';
 
-const mockAuth = vi.mocked(auth);
+const mockAuth = auth as unknown as Mock<() => Promise<Session | null>>;
 const mockFindFirst = vi.mocked(prisma.permission.findFirst);
 
 const mockSession = {
