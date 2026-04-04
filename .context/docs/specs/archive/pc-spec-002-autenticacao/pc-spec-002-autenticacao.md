@@ -3,7 +3,7 @@
 | Campo            | Valor                    |
 | ---------------- | ------------------------ |
 | **ID**           | PC-SPEC-002              |
-| **Status**       | Backlog                  |
+| **Status**       | Done                     |
 | **Prioridade**   | Crítica                  |
 | **Complexidade** | Alta                     |
 | **Criado em**    | 2026-04-03               |
