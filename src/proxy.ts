@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
+const secret = process.env.AUTH_SECRET;
+
 const PUBLIC_PATHS = ['/login', '/api/auth', '/demo'];
 
 function isPublicPath(pathname: string): boolean {
@@ -15,7 +17,7 @@ export async function proxy(request: NextRequest) {
   if (isPublicPath(pathname)) {
     // If user is authenticated and visits /login, redirect to /aplicacoes
     if (pathname.startsWith('/login')) {
-      const token = await getToken({ req: request });
+      const token = await getToken({ req: request, secret });
       if (token && !token.error) {
         return NextResponse.redirect(new URL('/aplicacoes', request.url));
       }
@@ -24,7 +26,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Check for valid session token
-  const token = await getToken({ req: request });
+  const token = await getToken({ req: request, secret });
 
   if (!token) {
     const loginUrl = new URL('/login', request.url);

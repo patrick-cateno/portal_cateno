@@ -16,7 +16,7 @@ generator client {
 model User {
   id            String       @id @default(cuid())
   email         String       @unique
-  emailVerified Boolean      @default(false)
+  emailVerified DateTime?
   keycloakSub   String?      @unique
   name          String?
   avatar        String?
@@ -49,6 +49,7 @@ model Account {
   token_type        String?
   scope             String?
   id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
