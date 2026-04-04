@@ -24,10 +24,10 @@
 
 | Métrica             | Valor                                                               |
 | ------------------- | ------------------------------------------------------------------- |
-| Total de interações | 23                                                                  |
+| Total de interações | 25                                                                  |
 | Tokens input (Σ)    | ≈215 (INT-008–010) + sem dados (INT-011–015, contexto compactado)   |
 | Tokens output (Σ)   | ≈3.442 (INT-008–010) + sem dados (INT-011–015, contexto compactado) |
-| Tempo acumulado     | ≈406 min                                                            |
+| Tempo acumulado     | ≈506 min                                                            |
 
 ---
 
@@ -35,6 +35,8 @@
 
 | ID         | Início               | Fim                  | Descrição                                                                                               | Branch                    | In (≈tok) | Out (≈tok) | Min | Min (Σ) |
 | ---------- | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------- | --------- | ---------- | --- | ------- |
+| PC-INT-025 | 2026-04-03T23:30 -03 | 2026-04-04T00:00 -03 | [SPEC-005: CatIA Interface Conversacional](./details/pc-int-025-spec005-catia.md)                        | feat/PC-005-catia-conversacional | ≈4.000 | ≈18.000 | 30  | 506     |
+| PC-INT-024 | 2026-04-03T22:20 -03 | 2026-04-03T23:30 -03 | [SPEC-004: Visão de Cards de Aplicações](./details/pc-int-024-spec004-visao-cards.md)                    | feat/PC-004-visao-cards | ≈3.500 | ≈16.000 | 70  | 476     |
 | PC-INT-023 | 2026-04-03T21:41 -03 | 2026-04-03T22:18 -03 | [SPEC-003: Layout Principal e Navegacao](./details/pc-int-023-spec003-layout.md)                         | feat/PC-003-layout-navegacao | ≈3.000 | ≈15.000 | 37  | 406     |
 | PC-INT-022 | 2026-04-03T20:19 -03 | 2026-04-03T21:12 -03 | [SPEC-002: Sistema de Autenticacao Keycloak + NextAuth v5](./details/pc-int-022-spec002-autenticacao.md) | feat/PC-002-autenticacao  | ≈2.500 | ≈12.000 | 53  | 369     |
 | PC-INT-021 | 2026-04-03T20:12 -03 | 2026-04-03T20:14 -03 | [Git: commit SPEC-006 + fix hooks condicionais](./details/pc-int-021-commit-spec006.md)                 | feat/PC-006-design-system-tokens | ≈200   | ≈400   | 2   | 316     |
@@ -79,5 +81,5 @@
 - [x] PC-INT-021 — Git: commit SPEC-006 + fix hooks condicionais
 - [x] PC-INT-022 — SPEC-002: Sistema de Autenticacao Keycloak + NextAuth v5
 - [x] PC-INT-023 — SPEC-003: Layout Principal e Navegacao
-  <!-- Próxima interação: copiar a linha abaixo e preencher -->
-  <!-- - [ ] PC-INT-024 — ... -->
+- [x] PC-INT-024 — SPEC-004: Visão de Cards de Aplicações
+- [x] PC-INT-025 — SPEC-005: CatIA Interface Conversacional
