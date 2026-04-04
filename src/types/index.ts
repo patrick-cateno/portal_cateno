@@ -11,11 +11,12 @@ export interface ApplicationCard {
   description: string | null;
   icon: string | null;
   categoryId: string;
+  categoryName: string;
+  categorySlug: string;
   status: ApplicationStatus;
   url: string | null;
   userCount: number;
   trend: number;
-  isFavorite: boolean;
 }
 
 export interface CategoryItem {
