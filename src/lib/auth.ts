@@ -60,7 +60,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             data: {
               name: user.name,
               avatar: user.image,
-              emailVerified: true,
+              emailVerified: new Date(),
               keycloakSub: (user as { keycloakSub?: string }).keycloakSub,
             },
           });
@@ -95,14 +95,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             update: {
               name: user.name,
               avatar: user.image,
-              emailVerified: true,
+              emailVerified: new Date(),
               keycloakSub: (user as { keycloakSub?: string }).keycloakSub,
             },
             create: {
               email: user.email!,
               name: user.name,
               avatar: user.image,
-              emailVerified: true,
+              emailVerified: new Date(),
               keycloakSub: (user as { keycloakSub?: string }).keycloakSub,
               roles: {
                 create: portalRoles.map((name) => ({ name })),
