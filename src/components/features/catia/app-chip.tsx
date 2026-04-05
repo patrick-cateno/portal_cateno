@@ -7,7 +7,7 @@ interface Props {
   name: string;
 }
 
-export function AppChip({ slug, name }: Props) {
+export function AppChip({ name }: Props) {
   const router = useRouter();
 
   return (
