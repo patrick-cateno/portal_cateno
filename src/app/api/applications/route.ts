@@ -3,9 +3,16 @@ import { prisma } from '@/lib/db';
 import { CreateApplicationSchema } from '@/lib/validations/application';
 import { Prisma } from '@prisma/client';
 
+function isServiceAccount(request: Request): boolean {
+  const authHeader = request.headers.get('authorization');
+  return authHeader === `Bearer ${process.env.HEALTH_CHECKER_SECRET}`;
+}
+
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user) {
+  const serviceAccount = isServiceAccount(request);
+  const session = !serviceAccount ? await auth() : null;
+
+  if (!serviceAccount && !session?.user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -15,15 +22,18 @@ export async function GET(request: Request) {
   const status = searchParams.get('status');
   const includeMetrics = searchParams.get('include_metrics') === 'true';
 
-  const userRoles = session.user.roles ?? [];
+  const userRoles = session?.user?.roles ?? [];
   const isViewer =
-    userRoles.includes('viewer') && !userRoles.includes('admin') && !userRoles.includes('user');
+    !serviceAccount &&
+    userRoles.includes('viewer') &&
+    !userRoles.includes('admin') &&
+    !userRoles.includes('user');
 
   const where: Prisma.ApplicationWhereInput = {
     // RBAC: viewer only sees apps with explicit Permission
     ...(isViewer && {
       permissions: {
-        some: { userId: session.user.id, canView: true },
+        some: { userId: session!.user.id, canView: true },
       },
     }),
     ...(category && { category: { slug: category } }),

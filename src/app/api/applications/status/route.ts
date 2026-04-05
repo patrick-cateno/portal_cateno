@@ -2,9 +2,16 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { AppStatusSchema } from '@/lib/validations/app-status';
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user) {
+function isServiceAccount(request: Request): boolean {
+  const authHeader = request.headers.get('authorization');
+  return authHeader === `Bearer ${process.env.HEALTH_CHECKER_SECRET}`;
+}
+
+export async function GET(request: Request) {
+  const serviceAccount = isServiceAccount(request);
+  const session = !serviceAccount ? await auth() : null;
+
+  if (!serviceAccount && !session?.user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

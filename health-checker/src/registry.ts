@@ -14,7 +14,9 @@ interface AppEntry {
 }
 
 export async function fetchActiveApps(): Promise<AppEntry[]> {
-  const res = await fetch(`${PORTAL_URL}/api/applications/status`);
+  const res = await fetch(`${PORTAL_URL}/api/applications/status`, {
+    headers: { Authorization: `Bearer ${SECRET}` },
+  });
 
   if (!res.ok) {
     throw new Error(`Failed to fetch apps: HTTP ${res.status}`);

@@ -23,12 +23,16 @@ const session = {
   expires: new Date(Date.now() + 86400000).toISOString(),
 };
 
+function makeRequest(headers: Record<string, string> = {}): Request {
+  return new Request('http://localhost:3000/api/applications/status', { headers });
+}
+
 describe('GET /api/applications/status', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('returns 401 without session', async () => {
     mockAuth.mockResolvedValueOnce(null);
-    const res = await GET();
+    const res = await GET(makeRequest());
     expect(res.status).toBe(401);
   });
 
@@ -38,7 +42,7 @@ describe('GET /api/applications/status', () => {
       { slug: 'gestao-cartoes', status: 'online', response_time_ms: 42 },
       { slug: 'tesouraria', status: 'offline', response_time_ms: null },
     ]);
-    const res = await GET();
+    const res = await GET(makeRequest());
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json).toHaveLength(2);
