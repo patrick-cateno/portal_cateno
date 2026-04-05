@@ -3,7 +3,7 @@
 | Campo            | Valor                    |
 | ---------------- | ------------------------ |
 | **ID**           | PC-SPEC-013              |
-| **Status**       | Backlog                  |
+| **Status**       | Concluída                |
 | **Prioridade**   | Média                    |
 | **Complexidade** | Baixa                    |
 | **Autor**        | Patrick Iarrocheski      |
