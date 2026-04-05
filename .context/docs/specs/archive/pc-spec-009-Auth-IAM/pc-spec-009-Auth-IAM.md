@@ -3,7 +3,7 @@
 | Campo            | Valor                  |
 | ---------------- | ---------------------- |
 | **ID**           | PC-SPEC-009            |
-| **Status**       | Backlog                |
+| **Status**       | Concluída              |
 | **Prioridade**   | Alta                   |
 | **Complexidade** | Média                  |
 | **Autor**        | Patrick Iarrocheski    |
