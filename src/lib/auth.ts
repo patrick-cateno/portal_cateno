@@ -136,9 +136,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         session.user.permissions =
           dbUser?.permissions.map((p) => ({
             id: p.id,
-            resource: p.resource,
-            resourceId: p.resourceId,
-            action: p.action,
+            applicationId: p.applicationId,
+            canView: p.canView,
+            canExecute: p.canExecute,
           })) ?? [];
 
         if (token.error) {

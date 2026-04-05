@@ -92,49 +92,60 @@ describe('auth-helpers', () => {
   describe('requirePermission', () => {
     it('should pass for admin without checking permissions', async () => {
       mockAuth.mockResolvedValueOnce(adminSession);
-      const session = await requirePermission('application', 'view');
+      const session = await requirePermission('app-1', 'view');
       expect(session.user.roles).toContain('admin');
       expect(mockFindFirst).not.toHaveBeenCalled();
     });
 
-    it('should pass when user has matching permission', async () => {
+    it('should pass when user has canView permission', async () => {
       mockAuth.mockResolvedValueOnce(mockSession);
       mockFindFirst.mockResolvedValueOnce({
         id: 'perm-1',
         userId: 'user-1',
-        resource: 'application',
-        resourceId: null,
-        action: 'view',
+        applicationId: 'app-1',
+        canView: true,
+        canExecute: false,
         createdAt: new Date(),
       });
 
-      const session = await requirePermission('application', 'view');
+      const session = await requirePermission('app-1', 'view');
       expect(session.user.id).toBe('user-1');
+      expect(mockFindFirst).toHaveBeenCalledWith({
+        where: {
+          userId: 'user-1',
+          applicationId: 'app-1',
+          canView: true,
+        },
+      });
+    });
+
+    it('should pass when user has canExecute permission', async () => {
+      mockAuth.mockResolvedValueOnce(mockSession);
+      mockFindFirst.mockResolvedValueOnce({
+        id: 'perm-2',
+        userId: 'user-1',
+        applicationId: 'app-1',
+        canView: true,
+        canExecute: true,
+        createdAt: new Date(),
+      });
+
+      const session = await requirePermission('app-1', 'execute');
+      expect(session.user.id).toBe('user-1');
+      expect(mockFindFirst).toHaveBeenCalledWith({
+        where: {
+          userId: 'user-1',
+          applicationId: 'app-1',
+          canExecute: true,
+        },
+      });
     });
 
     it('should call forbidden when user lacks permission', async () => {
       mockAuth.mockResolvedValueOnce(mockSession);
       mockFindFirst.mockResolvedValueOnce(null);
 
-      await expect(requirePermission('application', 'delete')).rejects.toThrow('NEXT_FORBIDDEN');
-    });
-
-    it('should check specific resourceId when provided', async () => {
-      mockAuth.mockResolvedValueOnce(mockSession);
-      mockFindFirst.mockResolvedValueOnce(null);
-
-      await expect(requirePermission('application', 'edit', 'app-123')).rejects.toThrow(
-        'NEXT_FORBIDDEN',
-      );
-
-      expect(mockFindFirst).toHaveBeenCalledWith({
-        where: {
-          userId: 'user-1',
-          resource: 'application',
-          action: 'edit',
-          resourceId: 'app-123',
-        },
-      });
+      await expect(requirePermission('app-1', 'execute')).rejects.toThrow('NEXT_FORBIDDEN');
     });
   });
 });

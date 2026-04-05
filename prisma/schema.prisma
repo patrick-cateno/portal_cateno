@@ -93,18 +93,35 @@ model Role {
 }
 
 model Permission {
-  id         String   @id @default(cuid())
-  userId     String
-  resource   String
-  resourceId String?
-  action     String
-  createdAt  DateTime @default(now())
+  id            String   @id @default(cuid())
+  userId        String
+  applicationId String
+  canView       Boolean  @default(true)
+  canExecute    Boolean  @default(false)
+  createdAt     DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, resource, resourceId, action])
+  @@unique([userId, applicationId])
   @@index([userId])
-  @@index([resource, resourceId])
+  @@index([applicationId])
+  @@map("permission")
+}
+
+// ── Enums ────────────────────────────────
+
+enum AppStatus {
+  online
+  maintenance
+  offline
+  archived
+}
+
+enum MetricsPeriod {
+  last_7_days
+  last_30_days
+  last_90_days
 }
 
 // ── Domain ───────────────────────────────
@@ -124,22 +141,28 @@ model Category {
 }
 
 model Application {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  slug        String   @unique
-  description String?
-  icon        String?
-  categoryId  String
-  status      String   @default("online")
-  url         String?
-  userCount   Int      @default(0)
-  trend       Float    @default(0)
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String    @id @default(cuid())
+  name            String    @unique
+  slug            String    @unique
+  description     String?
+  icon            String?
+  categoryId      String
+  status          AppStatus @default(online)
+  url             String?
+  healthCheckUrl  String?
+  integrationType String    @default("redirect")
+  userCount       Int       @default(0)
+  trend           Float     @default(0)
+  order           Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  category  Category   @relation(fields: [categoryId], references: [id])
-  favorites Favorite[]
+  category    Category          @relation(fields: [categoryId], references: [id])
+  favorites   Favorite[]
+  health      AppHealth[]
+  metrics     AppMetrics[]
+  permissions Permission[]
+  tools       MicroserviceTool[]
 
   @@index([categoryId])
   @@index([status])
@@ -156,6 +179,55 @@ model Favorite {
 
   @@unique([userId, applicationId])
   @@index([userId])
+}
+
+// ── Health & Metrics ─────────────────────
+
+model AppHealth {
+  id             String    @id @default(cuid())
+  applicationId  String
+  status         AppStatus
+  responseTimeMs Int?
+  uptimePct      Float?
+  errorMessage   String?
+  checkedAt      DateTime  @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, checkedAt(sort: Desc)])
+  @@map("app_health")
+}
+
+model AppMetrics {
+  id            String        @id @default(cuid())
+  applicationId String
+  activeUsers   Int
+  trendPct      Float
+  period        MetricsPeriod
+  recordedAt    DateTime      @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, recordedAt(sort: Desc)])
+  @@map("app_metrics")
+}
+
+// ── Microservice Tools ───────────────────
+
+model MicroserviceTool {
+  id            String   @id @default(cuid())
+  applicationId String
+  name          String
+  description   String?
+  endpoint      String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, isActive])
+  @@map("microservice_tool")
 }
 
 // ── Audit ────────────────────────────────

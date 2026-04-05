@@ -30,10 +30,10 @@ export async function requireRole(role: string) {
 }
 
 /**
- * Check if user has a specific permission for a resource.
+ * Check if user has a specific permission for an application.
  * Calls `forbidden()` if permission is not found.
  */
-export async function requirePermission(resource: string, action: string, resourceId?: string) {
+export async function requirePermission(applicationId: string, action: 'view' | 'execute') {
   const session = await requireAuth();
 
   // Admins bypass permission checks
@@ -44,9 +44,8 @@ export async function requirePermission(resource: string, action: string, resour
   const permission = await prisma.permission.findFirst({
     where: {
       userId: session.user.id,
-      resource,
-      action,
-      ...(resourceId ? { resourceId } : {}),
+      applicationId,
+      ...(action === 'view' ? { canView: true } : { canExecute: true }),
     },
   });
 
