@@ -24,14 +24,14 @@ function routeByIntent(state: GraphStateType): string {
 
 export function buildGraph() {
   const graph = new StateGraph(GraphState)
-    .addNode('intent', intentNode)
+    .addNode('intentClassifier', intentNode)
     .addNode('orchestrator', orchestratorNode)
     .addNode('search', searchNode)
     .addNode('toolCaller', toolCallerNode)
     .addNode('docProcessor', docProcessorNode)
     .addNode('responder', responderNode)
-    .addEdge('__start__', 'intent')
-    .addEdge('intent', 'orchestrator')
+    .addEdge('__start__', 'intentClassifier')
+    .addEdge('intentClassifier', 'orchestrator')
     .addConditionalEdges('orchestrator', routeByIntent)
     .addEdge('search', 'responder')
     .addEdge('toolCaller', 'responder')

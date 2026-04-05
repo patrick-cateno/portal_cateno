@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { auth, signOut } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { AppShell } from '@/components/layout';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -9,9 +9,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect('/login');
   }
 
-  // If refresh token expired, clear the stale session and redirect to login
+  // If refresh token expired, redirect to login — proxy handles session cleanup
   if (session.error === 'RefreshAccessTokenError') {
-    await signOut({ redirect: false });
     redirect('/login?error=SessionExpired');
   }
 

@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { Pencil, Archive, Search } from 'lucide-react';
+import { Pencil, Archive, Search, X, Check } from 'lucide-react';
 import Link from 'next/link';
 import { archiveApplication } from '@/app/(app)/admin/aplicacoes/actions';
 import { toast } from 'sonner';
@@ -48,6 +48,7 @@ export function AdminAppTable({ applications, search, status, page, totalPages }
   const router = useRouter();
   const [searchValue, setSearchValue] = useState(search);
   const [isPending, startTransition] = useTransition();
+  const [confirmingArchive, setConfirmingArchive] = useState<string | null>(null);
 
   function applyFilters(overrides: Record<string, string> = {}) {
     const params = new URLSearchParams();
@@ -58,12 +59,20 @@ export function AdminAppTable({ applications, search, status, page, totalPages }
     startTransition(() => router.push(`/admin/aplicacoes?${params.toString()}`));
   }
 
-  async function handleArchive(id: string, name: string) {
-    if (!confirm(`Arquivar "${name}"?`)) return;
-    const result = await archiveApplication(id);
-    if (result.success) {
-      toast.success(`"${name}" arquivada`);
-    }
+  function confirmArchive(id: string) {
+    startTransition(async () => {
+      try {
+        const result = await archiveApplication(id);
+        if (result.success) {
+          toast.success('Aplicação arquivada');
+          router.refresh();
+        }
+      } catch {
+        toast.error('Erro ao arquivar aplicação');
+      } finally {
+        setConfirmingArchive(null);
+      }
+    });
   }
 
   return (
@@ -135,15 +144,37 @@ export function AdminAppTable({ applications, search, status, page, totalPages }
                     >
                       <Pencil className="h-4 w-4" />
                     </Link>
-                    {app.status !== 'archived' && (
+                    {app.status !== 'archived' && confirmingArchive !== app.id && (
                       <button
                         type="button"
-                        onClick={() => handleArchive(app.id, app.name)}
+                        onClick={() => setConfirmingArchive(app.id)}
                         className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-amber-600"
                         title="Arquivar"
                       >
                         <Archive className="h-4 w-4" />
                       </button>
+                    )}
+                    {confirmingArchive === app.id && (
+                      <span className="flex items-center gap-1">
+                        <span className="text-xs text-amber-600">Arquivar?</span>
+                        <button
+                          type="button"
+                          onClick={() => confirmArchive(app.id)}
+                          disabled={isPending}
+                          className="rounded p-1 text-emerald-600 transition-colors hover:bg-emerald-50"
+                          title="Confirmar"
+                        >
+                          <Check className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmingArchive(null)}
+                          className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100"
+                          title="Cancelar"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </span>
                     )}
                   </div>
                 </td>

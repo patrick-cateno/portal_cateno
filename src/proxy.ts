@@ -6,10 +6,17 @@ const secret = process.env.AUTH_SECRET;
 
 const PUBLIC_PATHS = ['/login', '/api/auth', '/demo', '/api/tools'];
 
-function isPublicPath(pathname: string): boolean {
+function isPublicPath(pathname: string, request: NextRequest): boolean {
   if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) return true;
   // Health endpoint uses Bearer token, not NextAuth session
   if (/^\/api\/applications\/[^/]+\/health$/.test(pathname)) return true;
+  // Service account endpoints: allow Bearer token auth to reach route handlers
+  if (
+    request.headers.get('authorization')?.startsWith('Bearer ') &&
+    (pathname === '/api/applications' || pathname === '/api/applications/status')
+  ) {
+    return true;
+  }
   return false;
 }
 
@@ -17,7 +24,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths
-  if (isPublicPath(pathname)) {
+  if (isPublicPath(pathname, request)) {
     // If user is authenticated and visits /login, redirect to /aplicacoes
     if (pathname.startsWith('/login')) {
       const token = await getToken({ req: request, secret });

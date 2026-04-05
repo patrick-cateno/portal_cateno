@@ -31,5 +31,6 @@ export function createGoogleClient(model: string): GenerativeModel {
       process.env.GOOGLE_AI_API_KEY ?? process.env.GOOGLE_API_KEY ?? '',
     );
   }
-  return googleAI.getGenerativeModel({ model });
+  const fullModel = model.startsWith('models/') ? model : `models/${model}`;
+  return googleAI.getGenerativeModel({ model: fullModel });
 }
