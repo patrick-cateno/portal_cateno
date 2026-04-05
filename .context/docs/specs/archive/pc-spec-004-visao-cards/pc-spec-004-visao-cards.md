@@ -3,7 +3,7 @@
 | Campo            | Valor                   |
 | ---------------- | ----------------------- |
 | **ID**           | PC-SPEC-004             |
-| **Status**       | Backlog                 |
+| **Status**       | Done                    |
 | **Prioridade**   | Alta                    |
 | **Complexidade** | Média                   |
 | **Criado em**    | 2026-04-03              |

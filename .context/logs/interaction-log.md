@@ -27,7 +27,7 @@
 | Total de interações | 26                                                                  |
 | Tokens input (Σ)    | ≈215 (INT-008–010) + sem dados (INT-011–015, contexto compactado)   |
 | Tokens output (Σ)   | ≈3.442 (INT-008–010) + sem dados (INT-011–015, contexto compactado) |
-| Tempo acumulado     | ≈406 min                                                            |
+| Tempo acumulado     | ≈506 min                                                            |
 
 ---
 
@@ -82,5 +82,5 @@
 - [x] PC-INT-021 — Git: commit SPEC-006 + fix hooks condicionais
 - [x] PC-INT-022 — SPEC-002: Sistema de Autenticacao Keycloak + NextAuth v5
 - [x] PC-INT-023 — SPEC-003: Layout Principal e Navegacao
-  <!-- Próxima interação: copiar a linha abaixo e preencher -->
-  <!-- - [ ] PC-INT-024 — ... -->
+- [x] PC-INT-024 — SPEC-004: Visão de Cards de Aplicações
+- [x] PC-INT-025 — SPEC-005: CatIA Interface Conversacional

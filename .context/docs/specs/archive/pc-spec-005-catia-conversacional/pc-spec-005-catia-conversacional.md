@@ -3,7 +3,7 @@
 | Campo            | Valor                            |
 | ---------------- | -------------------------------- |
 | **ID**           | PC-SPEC-005                      |
-| **Status**       | Backlog                          |
+| **Status**       | Done                             |
 | **Prioridade**   | Alta                             |
 | **Complexidade** | Alta                             |
 | **Criado em**    | 2026-04-03                       |
