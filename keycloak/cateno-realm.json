@@ -9,6 +9,10 @@
   "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
   "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "refreshTokenMaxReuse": 0,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionMaxLifespan": 1800,
   "roles": {
     "realm": [
       { "name": "admin", "description": "Administrador do portal" },
@@ -23,17 +27,23 @@
       "enabled": true,
       "publicClient": false,
       "secret": "portal-cateno-dev-secret",
-      "redirectUris": ["http://localhost:3000/*"],
-      "webOrigins": ["http://localhost:3000"],
+      "redirectUris": [
+        "http://localhost:3000/api/auth/callback/keycloak",
+        "https://portal.cateno.com.br/api/auth/callback/keycloak"
+      ],
+      "webOrigins": ["http://localhost:3000", "https://portal.cateno.com.br"],
       "protocol": "openid-connect",
       "standardFlowEnabled": true,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
       "serviceAccountsEnabled": false,
       "frontchannelLogout": true,
       "attributes": {
-        "post.logout.redirect.uris": "http://localhost:3000/*",
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3000/*##https://portal.cateno.com.br/*",
         "backchannel.logout.url": "http://host.docker.internal:3000/api/auth/backchannel-logout",
-        "backchannel.logout.session.required": "true"
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.sessions": "true"
       },
       "protocolMappers": [
         {
@@ -51,6 +61,17 @@
           }
         }
       ]
+    },
+    {
+      "clientId": "health-checker",
+      "name": "Health Checker Service Account",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "health-checker-dev-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false
     }
   ],
   "users": [
