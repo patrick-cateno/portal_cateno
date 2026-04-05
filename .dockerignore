@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.github
+.context
+.claude
+health-checker
+keycloak
+infra
+*.md
+.env*
+!.env.example

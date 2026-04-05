@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════
-# Portal Cateno — Docker Compose (desenvolvimento)
+# Portal Cateno — Docker Compose (desenvolvimento + produção)
 # ═══════════════════════════════════════════
 
 services:
@@ -14,6 +14,11 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U cateno -d portal_cateno']
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
@@ -29,11 +34,45 @@ services:
       - ./keycloak/cateno-realm.json:/opt/keycloak/data/import/cateno-realm.json:ro
       - keycloak_data:/opt/keycloak/data
 
+  migrate:
+    build: .
+    container_name: portal-cateno-migrate
+    command: npx prisma migrate deploy
+    environment:
+      DATABASE_URL: postgresql://cateno:cateno_dev@postgres:5432/portal_cateno?schema=public
+    restart: 'no'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  portal:
+    build: .
+    container_name: portal-cateno-portal
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: postgresql://cateno:cateno_dev@postgres:5432/portal_cateno?schema=public
+      NEXTAUTH_URL: http://localhost:3000
+      AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-in-production}
+      AUTH_KEYCLOAK_ID: portal-cateno
+      AUTH_KEYCLOAK_SECRET: portal-cateno-dev-secret
+      AUTH_KEYCLOAK_ISSUER: http://keycloak:8080/realms/cateno
+      HEALTH_CHECKER_SECRET: ${HEALTH_CHECKER_SECRET:-health-checker-dev-secret}
+    command: node server.js
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      keycloak:
+        condition: service_started
+    profiles:
+      - production # Em dev, roda com `npm run dev` fora do Docker
+
   health-checker:
     build: ./health-checker
     container_name: portal-cateno-health-checker
     environment:
-      PORTAL_URL: http://host.docker.internal:3000
+      PORTAL_URL: http://portal:3000
       HEALTH_CHECKER_SECRET: ${HEALTH_CHECKER_SECRET:-health-checker-dev-secret}
       CHECK_INTERVAL_SECONDS: 30
       CONCURRENCY_LIMIT: 10
