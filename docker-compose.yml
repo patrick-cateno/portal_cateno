@@ -41,6 +41,20 @@ services:
     depends_on:
       - postgres
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: portal-cateno-caddy
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    profiles:
+      - production # Sobe apenas com: docker compose --profile production up -d
+
   langflow:
     image: langflowai/langflow:latest
     container_name: portal-cateno-langflow
@@ -56,4 +70,6 @@ services:
 volumes:
   postgres_data:
   keycloak_data:
+  caddy_data:
+  caddy_config:
   langflow_data:
