@@ -4,10 +4,13 @@ import { getToken } from 'next-auth/jwt';
 
 const secret = process.env.AUTH_SECRET;
 
-const PUBLIC_PATHS = ['/login', '/api/auth', '/demo'];
+const PUBLIC_PATHS = ['/login', '/api/auth', '/demo', '/api/tools'];
 
 function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+  if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) return true;
+  // Health endpoint uses Bearer token, not NextAuth session
+  if (/^\/api\/applications\/[^/]+\/health$/.test(pathname)) return true;
+  return false;
 }
 
 export async function proxy(request: NextRequest) {
