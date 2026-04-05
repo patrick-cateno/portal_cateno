@@ -218,14 +218,19 @@ model MicroserviceTool {
   id            String   @id @default(cuid())
   applicationId String
   name          String
-  description   String?
-  endpoint      String?
+  description   String
+  inputSchema   Json
+  outputSchema  Json?
+  endpoint      String
+  method        String   @default("POST")
+  requiredRole  String?
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
+  @@unique([applicationId, name])
   @@index([applicationId, isActive])
   @@map("microservice_tool")
 }
