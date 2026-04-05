@@ -35,9 +35,10 @@ services:
       - keycloak_data:/opt/keycloak/data
 
   migrate:
-    build: .
+    build:
+      context: .
+      target: migrate
     container_name: portal-cateno-migrate
-    command: npx prisma migrate deploy
     environment:
       DATABASE_URL: postgresql://cateno:cateno_dev@postgres:5432/portal_cateno?schema=public
     restart: 'no'
@@ -46,7 +47,9 @@ services:
         condition: service_healthy
 
   portal:
-    build: .
+    build:
+      context: .
+      target: runtime
     container_name: portal-cateno-portal
     ports:
       - '3000:3000'
