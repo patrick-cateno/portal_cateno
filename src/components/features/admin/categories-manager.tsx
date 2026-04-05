@@ -22,6 +22,17 @@ import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
   createCategory,
   updateCategory,
   deleteCategory,
@@ -80,13 +91,34 @@ function SortableRow({
           >
             <Pencil className="h-4 w-4" />
           </button>
-          <button
-            type="button"
-            onClick={() => onDelete(category)}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-red-600"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                type="button"
+                className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-red-600"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir categoria</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja excluir <strong>{category.name}</strong>? Esta ação não
+                  pode ser desfeita.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDelete(category)}
+                  className="bg-red-600 text-white hover:bg-red-700"
+                >
+                  Excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </td>
     </tr>
@@ -138,7 +170,6 @@ export function CategoriesManager({ categories: initial }: { categories: Categor
   }
 
   async function handleDelete(cat: CategoryRow) {
-    if (!confirm(`Excluir "${cat.name}"?`)) return;
     startTransition(async () => {
       const result: { success?: boolean; error?: string } = await deleteCategory(cat.id);
       if (result.error) {
