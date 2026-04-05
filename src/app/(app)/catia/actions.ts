@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { buildCatIAGraph } from '@/lib/ai/graph';
+import { getGraph } from '@/lib/catia/graph';
 import type { Message } from '@/types/chat';
 
 export async function getChatResponse(
@@ -17,7 +17,7 @@ export async function getChatResponse(
     include: { roles: true },
   });
 
-  const graph = buildCatIAGraph();
+  const graph = getGraph();
 
   try {
     const result = await graph.invoke({
@@ -32,9 +32,7 @@ export async function getChatResponse(
       ],
       userId: session.user.id,
       userRoles: dbUser?.roles.map((r) => r.name) ?? [],
-      intent: null,
-      apps: [],
-      response: '',
+      userToken: '',
     });
 
     return result.response;
