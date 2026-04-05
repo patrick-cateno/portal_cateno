@@ -1,6 +1,8 @@
 # dependencies
 /node_modules
 /node_modules_old
+health-checker/node_modules
+health-checker/dist
 /.pnp
 .pnp.*
 .yarn/*
