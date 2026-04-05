@@ -7,9 +7,9 @@ declare module 'next-auth' {
       roles: string[];
       permissions: Array<{
         id: string;
-        resource: string;
-        resourceId: string | null;
-        action: string;
+        applicationId: string;
+        canView: boolean;
+        canExecute: boolean;
       }>;
     } & DefaultSession['user'];
     error?: string;
