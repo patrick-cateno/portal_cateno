@@ -75,7 +75,7 @@ services:
     build: ./health-checker
     container_name: portal-cateno-health-checker
     environment:
-      PORTAL_URL: http://portal:3000
+      PORTAL_URL: ${PORTAL_URL:-http://host.docker.internal:3000}
       HEALTH_CHECKER_SECRET: ${HEALTH_CHECKER_SECRET:-health-checker-dev-secret}
       CHECK_INTERVAL_SECONDS: 30
       CONCURRENCY_LIMIT: 10
