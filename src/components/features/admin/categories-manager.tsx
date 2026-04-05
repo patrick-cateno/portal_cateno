@@ -215,23 +215,19 @@ export function CategoriesManager({ categories: initial }: { categories: Categor
       )}
 
       {/* Table with drag-and-drop */}
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50">
-            <tr>
-              <th className="w-10 px-4 py-3" />
-              <th className="px-4 py-3 font-medium text-gray-600">Nome</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Slug</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Ícone</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Apps</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Ações</th>
-            </tr>
-          </thead>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <div className="overflow-x-auto rounded-lg border border-gray-200">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-gray-200 bg-gray-50">
+              <tr>
+                <th className="w-10 px-4 py-3" />
+                <th className="px-4 py-3 font-medium text-gray-600">Nome</th>
+                <th className="px-4 py-3 font-medium text-gray-600">Slug</th>
+                <th className="px-4 py-3 font-medium text-gray-600">Ícone</th>
+                <th className="px-4 py-3 font-medium text-gray-600">Apps</th>
+                <th className="px-4 py-3 font-medium text-gray-600">Ações</th>
+              </tr>
+            </thead>
             <SortableContext
               items={categories.map((c) => c.id)}
               strategy={verticalListSortingStrategy}
@@ -247,9 +243,9 @@ export function CategoriesManager({ categories: initial }: { categories: Categor
                 ))}
               </tbody>
             </SortableContext>
-          </DndContext>
-        </table>
-      </div>
+          </table>
+        </div>
+      </DndContext>
     </div>
   );
 }

@@ -27,7 +27,7 @@ function AppShellInner({ children, userRoles }: AppShellProps) {
         <main
           id="main-content"
           className={cn(
-            'flex-1 overflow-y-auto transition-[margin-left] duration-150 ease-out',
+            'relative z-0 flex-1 overflow-y-auto transition-[margin-left] duration-150 ease-out',
             'pb-16 md:pb-0', // space for mobile bottom nav
             sidebarCollapsed ? 'md:ml-[var(--sidebar-collapsed)]' : 'md:ml-[var(--sidebar-width)]',
           )}
