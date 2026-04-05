@@ -215,7 +215,24 @@ WHERE "isActive" = true;
 - [ ] Seed atualizado com healthCheckUrl para todos os apps
 - [ ] pg_cron configurado para retenção (7 dias health, 90 dias metrics)
 
-## 8. Dependências
+## 8. Notas de Implementação
+
+> Adicionado pós-verificação (2026-04-05)
+
+### pg_cron substituído por node-cron
+
+A imagem `postgres:16-alpine` não inclui a extensão `pg_cron`. A política de retenção (seção 6) foi implementada via `node-cron` no runtime do Next.js:
+
+- **Arquivo:** `src/lib/cleanup.ts` + `src/instrumentation.ts`
+- **app_health:** limpeza diária às 02h (registros > 7 dias)
+- **app_metrics:** limpeza semanal aos domingos às 03h (registros > 90 dias)
+- O `instrumentation.ts` é carregado automaticamente pelo Next.js no boot do servidor
+
+### Permission simplificado
+
+O model `Permission` da spec previa campos `resource`, `resourceId` e `action`. Na implementação, foi simplificado para `applicationId` + `canView` + `canExecute`, alinhando com o RBAC real do portal onde permissões são sempre por aplicação.
+
+## 9. Dependências
 
 - **Depende de:** PC-SPEC-001 (schema base)
 - **Bloqueante para:** PC-SPEC-007, PC-SPEC-011, PC-SPEC-015

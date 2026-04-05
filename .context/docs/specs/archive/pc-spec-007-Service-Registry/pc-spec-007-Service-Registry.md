@@ -179,7 +179,25 @@ export async function PATCH(request: Request, { params }: { params: { slug: stri
 - [ ] Todos os filtros (category, search, status) funcionando
 - [ ] Testes unitários cobrindo os 4 endpoints
 
-## 8. Dependências
+## 8. Notas de Implementação
+
+> Adicionado pós-verificação (2026-04-05)
+
+### Health endpoint excluído do auth proxy
+
+O Next.js 16 substituiu `middleware.ts` por `proxy.ts`. O endpoint `PATCH /api/applications/[slug]/health` usa Bearer token (HEALTH_CHECKER_SECRET), não sessão NextAuth. Sem exclusão, o proxy redirecionava para `/login` antes do route handler poder verificar o token.
+
+**Correção:** `src/proxy.ts` exclui `/api/applications/*/health` e `/api/tools` das rotas protegidas:
+
+```typescript
+if (/^\/api\/applications\/[^/]+\/health$/.test(pathname)) return true;
+```
+
+### Auth via `auth()` (não `getServerSession`)
+
+A spec referencia `getServerSession(authOptions)` mas o projeto usa NextAuth v5 com `auth()` exportado de `src/lib/auth.ts`. Todas as API routes usam `const session = await auth()`.
+
+## 9. Dependências
 
 - **Depende de:** PC-SPEC-001 (Prisma), PC-SPEC-002 (NextAuth), PC-SPEC-008 (schema health/metrics)
 - **Bloqueante para:** PC-SPEC-010 (Admin Panel), PC-SPEC-011 (Health Checker), PC-SPEC-012 (CatIA)

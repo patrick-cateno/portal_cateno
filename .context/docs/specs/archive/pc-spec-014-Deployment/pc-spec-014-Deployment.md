@@ -173,6 +173,35 @@ postgres → migrate (prisma migrate deploy) → keycloak → portal → health-
 - [ ] CI/CD valida lint + tipos + testes antes do deploy
 - [ ] `.env.example` com todas as variáveis documentadas
 
-## 8. Dependências
+## 8. Notas de Implementação
+
+> Adicionado pós-verificação (2026-04-05)
+
+### Dockerfile multi-target (migrate + runtime)
+
+A spec previa um único Dockerfile com uma imagem usada tanto para migrate quanto para o portal. Na verificação, o container `migrate` usando `npx prisma migrate deploy` baixava Prisma 7.x (incompatível com o schema v6).
+
+**Correção:** Dockerfile com targets separados:
+- **`migrate`** — inclui `node_modules` completo com Prisma CLI na versão do `package.json`
+- **`runtime`** — apenas standalone output do Next.js (sem Prisma CLI)
+
+```yaml
+# docker-compose.yml
+migrate:
+  build:
+    context: .
+    target: migrate    # ← usa node_modules com Prisma 6.x
+
+portal:
+  build:
+    context: .
+    target: runtime    # ← standalone Next.js
+```
+
+### Portal com profile production
+
+O serviço `portal` no docker-compose tem `profiles: [production]` para não conflitar com `npm run dev` em desenvolvimento. Em dev, apenas postgres, keycloak, migrate e health-checker sobem via Docker.
+
+## 9. Dependências
 
 - **Depende de:** Todas as specs anteriores

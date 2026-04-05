@@ -157,7 +157,17 @@ LOG_LEVEL=info
 - [ ] `HEALTH_CHECKER_SECRET` validado pelo portal
 - [ ] Container sobe com `docker compose up`
 
-## 7. Dependências
+## 7. Notas de Implementação
+
+> Adicionado pós-verificação (2026-04-05)
+
+### PORTAL_URL com fallback para desenvolvimento
+
+A spec previa `PORTAL_URL=http://portal:3000` (rede Docker interna). Na prática, em desenvolvimento o portal roda via `npm run dev` fora do Docker, então o health-checker não resolve o hostname `portal`.
+
+**Correção:** `docker-compose.yml` usa `${PORTAL_URL:-http://host.docker.internal:3000}` como fallback. Em produção (profile production), o portal roda no Docker e o health-checker usa `http://portal:3000` via variável de ambiente.
+
+## 8. Dependências
 
 - **Depende de:** PC-SPEC-007 (endpoint /health), PC-SPEC-008 (schema AppHealth), PC-SPEC-009 (secret)
 - **Não é bloqueante** para outras specs
