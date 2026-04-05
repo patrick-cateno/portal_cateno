@@ -40,7 +40,14 @@ export async function validateLogoutToken(token: string): Promise<{ sub: string 
   const issuer = getIssuer();
   const { payload } = await jose.jwtVerify(token, getJwks(), {
     issuer,
+    audience: getClientId(),
   });
+
+  // Ensure this is a backchannel logout token, not an access/id token
+  const events = (payload as Record<string, unknown>).events as Record<string, unknown> | undefined;
+  if (!events?.['http://schemas.openid.net/event/backchannel-logout']) {
+    throw new Error('Token is not a backchannel logout token');
+  }
 
   if (!payload.sub) {
     throw new Error('logout_token missing sub claim');
