@@ -2,10 +2,21 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { Pencil, Archive, Search, X, Check } from 'lucide-react';
+import { Pencil, Archive, Search } from 'lucide-react';
 import Link from 'next/link';
 import { archiveApplication } from '@/app/(app)/admin/aplicacoes/actions';
 import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface AppRow {
   id: string;
@@ -48,7 +59,6 @@ export function AdminAppTable({ applications, search, status, page, totalPages }
   const router = useRouter();
   const [searchValue, setSearchValue] = useState(search);
   const [isPending, startTransition] = useTransition();
-  const [confirmingArchive, setConfirmingArchive] = useState<string | null>(null);
 
   function applyFilters(overrides: Record<string, string> = {}) {
     const params = new URLSearchParams();
@@ -59,7 +69,7 @@ export function AdminAppTable({ applications, search, status, page, totalPages }
     startTransition(() => router.push(`/admin/aplicacoes?${params.toString()}`));
   }
 
-  function confirmArchive(id: string) {
+  function handleArchive(id: string) {
     startTransition(async () => {
       try {
         const result = await archiveApplication(id);
@@ -69,8 +79,6 @@ export function AdminAppTable({ applications, search, status, page, totalPages }
         }
       } catch {
         toast.error('Erro ao arquivar aplicação');
-      } finally {
-        setConfirmingArchive(null);
       }
     });
   }
@@ -144,37 +152,38 @@ export function AdminAppTable({ applications, search, status, page, totalPages }
                     >
                       <Pencil className="h-4 w-4" />
                     </Link>
-                    {app.status !== 'archived' && confirmingArchive !== app.id && (
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingArchive(app.id)}
-                        className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-amber-600"
-                        title="Arquivar"
-                      >
-                        <Archive className="h-4 w-4" />
-                      </button>
-                    )}
-                    {confirmingArchive === app.id && (
-                      <span className="flex items-center gap-1">
-                        <span className="text-xs text-amber-600">Arquivar?</span>
-                        <button
-                          type="button"
-                          onClick={() => confirmArchive(app.id)}
-                          disabled={isPending}
-                          className="rounded p-1 text-emerald-600 transition-colors hover:bg-emerald-50"
-                          title="Confirmar"
-                        >
-                          <Check className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setConfirmingArchive(null)}
-                          className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100"
-                          title="Cancelar"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </span>
+                    {app.status !== 'archived' && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button
+                            type="button"
+                            className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-amber-600"
+                            title="Arquivar"
+                          >
+                            <Archive className="h-4 w-4" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Arquivar aplicação</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja arquivar <strong>{app.name}</strong>? A
+                              aplicação não aparecerá mais no catálogo, mas pode ser restaurada
+                              posteriormente.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleArchive(app.id)}
+                              disabled={isPending}
+                              className="bg-amber-600 text-white hover:bg-amber-700"
+                            >
+                              Arquivar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     )}
                   </div>
                 </td>

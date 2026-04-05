@@ -1,3 +1,15 @@
+export {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from './alert-dialog';
+
 export { Avatar, avatarVariants } from './avatar';
 export type { AvatarProps } from './avatar';
 
