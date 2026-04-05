@@ -3,7 +3,7 @@
 | Campo            | Valor                     |
 | ---------------- | ------------------------- |
 | **ID**           | PC-SPEC-008               |
-| **Status**       | Backlog                   |
+| **Status**       | Concluída                 |
 | **Prioridade**   | Alta — pré-requisito      |
 | **Complexidade** | Baixa                     |
 | **Autor**        | Patrick Iarrocheski       |
