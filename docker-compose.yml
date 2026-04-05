@@ -29,6 +29,18 @@ services:
       - ./keycloak/cateno-realm.json:/opt/keycloak/data/import/cateno-realm.json:ro
       - keycloak_data:/opt/keycloak/data
 
+  health-checker:
+    build: ./health-checker
+    container_name: portal-cateno-health-checker
+    environment:
+      PORTAL_URL: http://host.docker.internal:3000
+      HEALTH_CHECKER_SECRET: ${HEALTH_CHECKER_SECRET:-health-checker-dev-secret}
+      CHECK_INTERVAL_SECONDS: 30
+      CONCURRENCY_LIMIT: 10
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
   langflow:
     image: langflowai/langflow:latest
     container_name: portal-cateno-langflow
