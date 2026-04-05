@@ -229,6 +229,61 @@ async function main() {
   }
 
   console.log(`✅ ${applications.length} applications seeded`);
+
+  // ── Microservice Tools (example: gestao-cartoes) ──
+  const gestaoCartoes = await prisma.application.findUnique({ where: { slug: 'gestao-cartoes' } });
+
+  if (gestaoCartoes) {
+    const tools = [
+      {
+        applicationId: gestaoCartoes.id,
+        name: 'consultar_cartao',
+        description:
+          'Consulta dados de um cartão pelo número ou CPF do titular. Use quando o usuário perguntar sobre um cartão específico.',
+        inputSchema: {
+          type: 'object',
+          required: ['identificador'],
+          properties: {
+            identificador: { type: 'string', description: 'Número do cartão ou CPF do titular' },
+          },
+        },
+        endpoint: 'https://cartoes.cateno.com.br/api/cartoes/consulta',
+        method: 'GET',
+        requiredRole: 'user',
+      },
+      {
+        applicationId: gestaoCartoes.id,
+        name: 'bloquear_cartao',
+        description:
+          'Bloqueia um cartão por perda, roubo ou suspeita de fraude. Use quando o usuário pedir para bloquear um cartão.',
+        inputSchema: {
+          type: 'object',
+          required: ['cartao_id', 'motivo'],
+          properties: {
+            cartao_id: { type: 'string', description: 'ID do cartão' },
+            motivo: {
+              type: 'string',
+              enum: ['perda', 'roubo', 'fraude', 'outros'],
+              description: 'Motivo do bloqueio',
+            },
+          },
+        },
+        endpoint: 'https://cartoes.cateno.com.br/api/cartoes/bloquear',
+        method: 'POST',
+        requiredRole: 'user',
+      },
+    ];
+
+    for (const tool of tools) {
+      await prisma.microserviceTool.upsert({
+        where: { applicationId_name: { applicationId: tool.applicationId, name: tool.name } },
+        update: {},
+        create: tool,
+      });
+    }
+
+    console.log(`✅ ${tools.length} microservice tools seeded`);
+  }
 }
 
 main()
