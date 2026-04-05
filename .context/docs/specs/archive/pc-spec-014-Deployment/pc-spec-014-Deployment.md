@@ -3,7 +3,7 @@
 | Campo            | Valor                    |
 | ---------------- | ------------------------ |
 | **ID**           | PC-SPEC-014              |
-| **Status**       | Backlog                  |
+| **Status**       | Concluída                |
 | **Prioridade**   | Baixa — última etapa     |
 | **Complexidade** | Média                    |
 | **Autor**        | Patrick Iarrocheski      |
