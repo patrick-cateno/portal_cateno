@@ -7,7 +7,7 @@ export function CatiaGuia() {
       <SectionHeading
         id="catia"
         title="CatIA — Assistente Inteligente"
-        description="Converse com a inteligencia artificial do Portal Cateno"
+        description="Converse com a inteligencia artificial do CatIA Super App"
       />
 
       <div className="space-y-6 text-sm leading-relaxed text-neutral-700">
@@ -16,7 +16,7 @@ export function CatiaGuia() {
             O que o CatIA pode fazer
           </h3>
           <p>
-            O CatIA e o assistente inteligente do Portal Cateno. Ele entende linguagem natural e
+            O CatIA e o assistente inteligente do CatIA Super App. Ele entende linguagem natural e
             pode executar acoes nos microsservicos conectados ao portal. Voce pode pedir
             informacoes, executar operacoes e navegar entre aplicacoes usando comandos em texto
             livre.

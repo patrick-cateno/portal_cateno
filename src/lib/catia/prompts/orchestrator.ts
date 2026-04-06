@@ -1,9 +1,10 @@
 import type { GraphStateType } from '../state';
+import { siteConfig } from '@/config/site';
 
 export function buildOrchestratorPrompt(state: GraphStateType): string {
   const lastMessage = state.messages[state.messages.length - 1]?.content ?? '';
 
-  return `Você é o orquestrador do CatIA, assistente inteligente do Portal Cateno.
+  return `Você é o orquestrador do CatIA, assistente inteligente do ${siteConfig.name}.
 Analise a mensagem do usuário e classifique a intenção.
 
 Mensagem: "${lastMessage}"

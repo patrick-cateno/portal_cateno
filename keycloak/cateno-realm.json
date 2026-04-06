@@ -22,11 +22,11 @@
   },
   "clients": [
     {
-      "clientId": "portal-cateno",
-      "name": "Portal Cateno",
+      "clientId": "csa",
+      "name": "CSA - CatIA Super App",
       "enabled": true,
       "publicClient": false,
-      "secret": "portal-cateno-dev-secret",
+      "secret": "csa-dev-secret",
       "redirectUris": [
         "http://localhost:3000/api/auth/callback/keycloak",
         "https://portal.cateno.com.br/api/auth/callback/keycloak"

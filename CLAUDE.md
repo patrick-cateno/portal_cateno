@@ -1,16 +1,16 @@
 @AGENTS.md
 
-# Protocolo Obrigatório — Portal Cateno
+# Protocolo Obrigatório — CSA - CatIA Super App
 
 ---
 
 ## 0. O que é este projeto (ler antes de qualquer coisa)
 
-O **Portal Cateno** é um **frontend shell** — uma aplicação React que centraliza e
+O **CSA (CatIA Super App)** é um **frontend shell** — uma aplicação React que centraliza e
 roteia para todos os microsserviços da Cateno.
 
-**O portal NÃO contém lógica de negócio.** Toda regra de negócio vive nos microsserviços.
-O portal sabe apenas:
+**O CSA NÃO contém lógica de negócio.** Toda regra de negócio vive nos microsserviços.
+O CSA sabe apenas:
 - **Quais** aplicações existem (via Service Registry API)
 - **Quem** pode acessar cada uma (roles extraídos do JWT — nunca decidido no frontend)
 - **Como** abrir cada uma (redirect / embed / modal — definido pelo campo `integration_type`)
@@ -282,7 +282,7 @@ Escrever como se explicasse para humano que nunca viu o sistema, com frases reai
 ## 9. Estrutura de pastas obrigatória
 
 ```
-portal-cateno/
+csa-catia-super-app/
 ├── CLAUDE.md                        ← Este arquivo (nunca remover)
 ├── AGENTS.md                        ← Regras para modo agêntico
 ├── docs/

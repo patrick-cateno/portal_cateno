@@ -1,28 +1,28 @@
 # ═══════════════════════════════════════════
-# Portal Cateno — Docker Compose (desenvolvimento + produção)
+# CSA - CatIA Super App — Docker Compose (desenvolvimento + produção)
 # ═══════════════════════════════════════════
 
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: portal-cateno-db
+    container_name: csa-db
     environment:
       POSTGRES_USER: cateno
       POSTGRES_PASSWORD: cateno_dev
-      POSTGRES_DB: portal_cateno
+      POSTGRES_DB: csa
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U cateno -d portal_cateno']
+      test: ['CMD-SHELL', 'pg_isready -U cateno -d csa']
       interval: 5s
       timeout: 3s
       retries: 5
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
-    container_name: portal-cateno-keycloak
+    container_name: csa-keycloak
     command: start-dev --import-realm
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -38,9 +38,9 @@ services:
     build:
       context: .
       target: migrate
-    container_name: portal-cateno-migrate
+    container_name: csa-migrate
     environment:
-      DATABASE_URL: postgresql://cateno:cateno_dev@postgres:5432/portal_cateno?schema=public
+      DATABASE_URL: postgresql://cateno:cateno_dev@postgres:5432/csa?schema=public
     restart: 'no'
     depends_on:
       postgres:
@@ -50,15 +50,15 @@ services:
     build:
       context: .
       target: runtime
-    container_name: portal-cateno-portal
+    container_name: csa-portal
     ports:
       - '3000:3000'
     environment:
-      DATABASE_URL: postgresql://cateno:cateno_dev@postgres:5432/portal_cateno?schema=public
+      DATABASE_URL: postgresql://cateno:cateno_dev@postgres:5432/csa?schema=public
       NEXTAUTH_URL: http://localhost:3000
       AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-in-production}
-      AUTH_KEYCLOAK_ID: portal-cateno
-      AUTH_KEYCLOAK_SECRET: portal-cateno-dev-secret
+      AUTH_KEYCLOAK_ID: csa
+      AUTH_KEYCLOAK_SECRET: csa-dev-secret
       AUTH_KEYCLOAK_ISSUER: http://keycloak:8080/realms/cateno
       HEALTH_CHECKER_SECRET: ${HEALTH_CHECKER_SECRET:-health-checker-dev-secret}
     command: node server.js
@@ -73,7 +73,7 @@ services:
 
   health-checker:
     build: ./health-checker
-    container_name: portal-cateno-health-checker
+    container_name: csa-health-checker
     environment:
       PORTAL_URL: ${PORTAL_URL:-http://host.docker.internal:3000}
       HEALTH_CHECKER_SECRET: ${HEALTH_CHECKER_SECRET:-health-checker-dev-secret}
@@ -85,7 +85,7 @@ services:
 
   caddy:
     image: caddy:2-alpine
-    container_name: portal-cateno-caddy
+    container_name: csa-caddy
     ports:
       - '80:80'
       - '443:443'
@@ -99,7 +99,7 @@ services:
 
   langflow:
     image: langflowai/langflow:latest
-    container_name: portal-cateno-langflow
+    container_name: csa-langflow
     ports:
       - '7860:7860'
     volumes:

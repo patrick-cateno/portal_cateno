@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════
-// Portal Cateno — Prisma Schema
+// CSA - CatIA Super App — Prisma Schema
 // ═══════════════════════════════════════════
 
 datasource db {

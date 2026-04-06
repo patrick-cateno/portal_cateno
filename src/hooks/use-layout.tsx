@@ -20,7 +20,7 @@ interface LayoutContextValue {
 
 const LayoutContext = createContext<LayoutContextValue | null>(null);
 
-const STORAGE_KEY = 'portal-cateno-sidebar-collapsed';
+const STORAGE_KEY = 'csa-sidebar-collapsed';
 
 function getStoredCollapsed(): boolean {
   if (typeof window === 'undefined') return false;

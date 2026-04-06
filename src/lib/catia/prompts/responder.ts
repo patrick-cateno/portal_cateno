@@ -1,4 +1,5 @@
 import type { GraphStateType } from '../state';
+import { siteConfig } from '@/config/site';
 
 export function buildResponderPrompt(state: GraphStateType): string {
   const lastUserMessage =
@@ -18,7 +19,7 @@ export function buildResponderPrompt(state: GraphStateType): string {
     context += `\nResultados de operações:\n${results}\n`;
   }
 
-  return `Você é o CatIA, assistente inteligente do Portal Cateno.
+  return `Você é o CatIA, assistente inteligente do ${siteConfig.name}.
 Responda de forma concisa e amigável em português brasileiro.
 
 Pergunta do usuário: "${lastUserMessage}"

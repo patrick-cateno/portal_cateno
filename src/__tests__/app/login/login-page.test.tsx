@@ -21,7 +21,7 @@ import LoginPage from '@/app/(auth)/login/page';
 describe('LoginPage', () => {
   it('should render the welcome heading', () => {
     render(<LoginPage />);
-    expect(screen.getByText('Bem-vindo ao Portal Cateno')).toBeInTheDocument();
+    expect(screen.getByText('Bem-vindo ao CatIA Super App')).toBeInTheDocument();
   });
 
   it('should render the subheading', () => {

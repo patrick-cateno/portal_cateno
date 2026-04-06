@@ -10,7 +10,7 @@ export default function DemoPage() {
   return (
     <AppShell userRoles={['admin']}>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-neutral-900">Portal Cateno — Demo</h1>
+        <h1 className="text-2xl font-bold text-neutral-900">CSA — Demo</h1>
         <p className="text-neutral-600">
           Esta pagina demonstra o layout completo (header, sidebar, breadcrumb) sem necessidade de
           autenticacao via Keycloak.

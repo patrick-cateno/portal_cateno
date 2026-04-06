@@ -1,12 +1,12 @@
 #!/bin/bash
 # ═══════════════════════════════════════════
-# Portal Cateno — Setup Script
+# CSA - CatIA Super App — Setup Script
 # Roda após git clone para configurar tudo
 # ═══════════════════════════════════════════
 
 set -e
 
-echo "🚀 Portal Cateno — Setup"
+echo "🚀 CSA - CatIA Super App — Setup"
 echo "========================"
 
 # 1. Instalar dependências

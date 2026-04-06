@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════
-// Portal Cateno — Shared Types
+// CSA - CatIA Super App — Shared Types
 // ═══════════════════════════════════════════
 
 export type ApplicationStatus = 'online' | 'maintenance' | 'offline';

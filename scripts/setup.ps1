@@ -1,11 +1,11 @@
 # ═══════════════════════════════════════════
-# Portal Cateno — Setup Script (PowerShell)
+# CSA - CatIA Super App — Setup Script (PowerShell)
 # Roda após git clone para configurar tudo
 # ═══════════════════════════════════════════
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "`n🚀 Portal Cateno — Setup" -ForegroundColor Cyan
+Write-Host "`n🚀 CSA - CatIA Super App — Setup" -ForegroundColor Cyan
 Write-Host "========================" -ForegroundColor Cyan
 
 # 1. Instalar dependências

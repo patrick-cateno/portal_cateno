@@ -48,7 +48,7 @@ export function Header({ className }: { className?: string }) {
         </button>
 
         {/* Logo */}
-        <Link href="/aplicacoes" title="Portal Cateno" className="shrink-0">
+        <Link href="/aplicacoes" title="CSA" className="shrink-0">
           <CatenoLogo size="sm" variant="dark" />
         </Link>
       </div>

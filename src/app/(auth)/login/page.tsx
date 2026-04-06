@@ -22,7 +22,7 @@ export default function LoginPage() {
 
         <Card className="w-full shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl text-neutral-900">Bem-vindo ao Portal Cateno</CardTitle>
+            <CardTitle className="text-xl text-neutral-900">Bem-vindo ao CatIA Super App</CardTitle>
             <CardDescription>Acesse suas aplicacoes</CardDescription>
           </CardHeader>
 

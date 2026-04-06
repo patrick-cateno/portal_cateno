@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════
-// Portal Cateno — API Response Types
+// CSA - CatIA Super App — API Response Types
 // ═══════════════════════════════════════════
 
 export interface ApiResponse<T> {
