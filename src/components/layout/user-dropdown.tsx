@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { User, Settings, LogOut } from 'lucide-react';
+import { User, Settings, LogOut, BookOpen } from 'lucide-react';
 import {
   Avatar,
   Dropdown,
@@ -47,6 +47,14 @@ export function UserDropdown() {
         <DropdownItem onClick={() => {}}>
           <Settings className="h-4 w-4 text-neutral-500" />
           Configuracoes
+        </DropdownItem>
+        <DropdownItem
+          onClick={() => {
+            window.location.href = '/ajuda';
+          }}
+        >
+          <BookOpen className="h-4 w-4 text-neutral-500" />
+          Ajuda & Documentacao
         </DropdownItem>
 
         <DropdownSeparator />

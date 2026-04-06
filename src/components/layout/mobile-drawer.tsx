@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { sidebarNavItems } from '@/config/navigation';
+import { sidebarNavItems, isDivider } from '@/config/navigation';
 import { useLayout } from '@/hooks/use-layout';
 import { cn } from '@/lib/utils';
 import { SidebarLink } from './sidebar-link';
@@ -12,10 +12,6 @@ interface MobileDrawerProps {
 
 export function MobileDrawer({ userRoles = ['user'] }: MobileDrawerProps) {
   const { sidebarOpen, closeMobileDrawer } = useLayout();
-
-  const visibleItems = sidebarNavItems.filter(
-    (item) => !item.roles || item.roles.some((role) => userRoles.includes(role)),
-  );
 
   return (
     <>
@@ -49,11 +45,27 @@ export function MobileDrawer({ userRoles = ['user'] }: MobileDrawerProps) {
         </div>
 
         <nav className="flex flex-col gap-1 p-3">
-          {visibleItems.map((item) => (
-            <div key={item.href} onClick={closeMobileDrawer}>
-              <SidebarLink item={item} collapsed={false} />
-            </div>
-          ))}
+          {sidebarNavItems.map((item, index) => {
+            if (isDivider(item)) {
+              return (
+                <div
+                  key={`divider-${index}`}
+                  className="my-1 h-px bg-neutral-200"
+                  role="separator"
+                />
+              );
+            }
+
+            if (item.roles && !item.roles.some((role) => userRoles.includes(role))) {
+              return null;
+            }
+
+            return (
+              <div key={item.href} onClick={closeMobileDrawer}>
+                <SidebarLink item={item} collapsed={false} />
+              </div>
+            );
+          })}
         </nav>
       </aside>
     </>

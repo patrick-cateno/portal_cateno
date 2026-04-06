@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mainNavItems, sidebarNavItems, breadcrumbLabels } from '@/config/navigation';
+import { mainNavItems, sidebarNavItems, breadcrumbLabels, isDivider } from '@/config/navigation';
 
 describe('navigation config', () => {
   describe('mainNavItems', () => {
@@ -23,18 +23,26 @@ describe('navigation config', () => {
   });
 
   describe('sidebarNavItems', () => {
-    it('should include Inicio, Favoritos, Suporte, Admin', () => {
-      const labels = sidebarNavItems.map((i) => i.label);
+    const navItems = sidebarNavItems.filter((item) => !isDivider(item));
+
+    it('should include Inicio, Favoritos, Suporte, Admin, Ajuda', () => {
+      const labels = navItems.map((i) => ('label' in i ? i.label : ''));
       expect(labels).toContain('Inicio');
       expect(labels).toContain('Favoritos');
       expect(labels).toContain('Suporte');
       expect(labels).toContain('Admin');
+      expect(labels).toContain('Ajuda');
     });
 
     it('Admin should require admin role', () => {
-      const admin = sidebarNavItems.find((i) => i.label === 'Admin');
-      expect(admin?.roles).toContain('admin');
-      expect(admin?.roles).not.toContain('user');
+      const admin = navItems.find((i) => 'label' in i && i.label === 'Admin');
+      expect(admin && 'roles' in admin ? admin.roles : []).toContain('admin');
+      expect(admin && 'roles' in admin ? admin.roles : []).not.toContain('user');
+    });
+
+    it('should contain at least one divider', () => {
+      const dividers = sidebarNavItems.filter(isDivider);
+      expect(dividers.length).toBeGreaterThan(0);
     });
   });
 
@@ -43,6 +51,7 @@ describe('navigation config', () => {
       expect(breadcrumbLabels.aplicacoes).toBe('Aplicacoes');
       expect(breadcrumbLabels.catia).toBe('CatIA');
       expect(breadcrumbLabels.inicio).toBe('Inicio');
+      expect(breadcrumbLabels.ajuda).toBe('Ajuda');
     });
   });
 });
