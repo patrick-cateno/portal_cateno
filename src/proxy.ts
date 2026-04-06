@@ -25,11 +25,17 @@ export async function proxy(request: NextRequest) {
 
   // Allow public paths
   if (isPublicPath(pathname, request)) {
-    // If user is authenticated and visits /login, redirect to /aplicacoes
+    // If user is authenticated and visits /login (without error/callback params),
+    // redirect to /aplicacoes. Skip redirect when error or callbackUrl present —
+    // these indicate a forced logout or session invalidation (e.g. backchannel logout).
     if (pathname.startsWith('/login')) {
-      const token = await getToken({ req: request, secret });
-      if (token && !token.error) {
-        return NextResponse.redirect(new URL('/aplicacoes', request.url));
+      const hasError = request.nextUrl.searchParams.has('error');
+      const hasCallback = request.nextUrl.searchParams.has('callbackUrl');
+      if (!hasError && !hasCallback) {
+        const token = await getToken({ req: request, secret });
+        if (token && !token.error) {
+          return NextResponse.redirect(new URL('/aplicacoes', request.url));
+        }
       }
     }
     return NextResponse.next();
