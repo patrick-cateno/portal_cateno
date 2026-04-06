@@ -24,7 +24,7 @@
 
 | Métrica             | Valor                                                               |
 | ------------------- | ------------------------------------------------------------------- |
-| Total de interações | 26                                                                  |
+| Total de interações | 28                                                                  |
 | Tokens input (Σ)    | ≈215 (INT-008–010) + sem dados (INT-011–015, contexto compactado)   |
 | Tokens output (Σ)   | ≈3.442 (INT-008–010) + sem dados (INT-011–015, contexto compactado) |
 | Tempo acumulado     | ≈506 min                                                            |
@@ -35,6 +35,8 @@
 
 | ID         | Início               | Fim                  | Descrição                                                                                               | Branch                    | In (≈tok) | Out (≈tok) | Min | Min (Σ) |
 | ---------- | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------- | --------- | ---------- | --- | ------- |
+| PC-INT-028 | 2026-04-06T06:19 -03 | 2026-04-06T06:20 -03 | [Fix: refresh token retry storm — singleton lock](./details/pc-int-028-fix-refresh-storm.md) | main | ≈2.000 | ≈3.000 | 1 | 569 |
+| PC-INT-027 | 2026-04-05T22:20 -03 | 2026-04-05T23:16 -03 | [SPEC-018: Documentação in-portal /ajuda](./details/pc-int-027-spec018-documentacao.md)                  | feat/PC-018-documentacao-portal | ≈5.000 | ≈20.000 | 56  | 568     |
 | PC-INT-026 | 2026-04-05T00:24 -03 | 2026-04-05T00:30 -03 | [SPEC-008: Evolução Schema Prisma](./details/pc-int-026-spec008-database.md)                             | feat/PC-008-database | ≈3.000 | ≈12.000 | 6   | 512     |
 | PC-INT-025 | 2026-04-03T23:30 -03 | 2026-04-04T00:00 -03 | [SPEC-005: CatIA Interface Conversacional](./details/pc-int-025-spec005-catia.md)                        | feat/PC-005-catia-conversacional | ≈4.000 | ≈18.000 | 30  | 506     |
 | PC-INT-024 | 2026-04-03T22:20 -03 | 2026-04-03T23:30 -03 | [SPEC-004: Visão de Cards de Aplicações](./details/pc-int-024-spec004-visao-cards.md)                    | feat/PC-004-visao-cards | ≈3.500 | ≈16.000 | 70  | 476     |
