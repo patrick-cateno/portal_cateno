@@ -24,7 +24,7 @@
 
 | Métrica             | Valor                                                               |
 | ------------------- | ------------------------------------------------------------------- |
-| Total de interações | 29                                                                  |
+| Total de interações | 30                                                                  |
 | Tokens input (Σ)    | ≈215 (INT-008–010) + sem dados (INT-011–015, contexto compactado)   |
 | Tokens output (Σ)   | ≈3.442 (INT-008–010) + sem dados (INT-011–015, contexto compactado) |
 | Tempo acumulado     | ≈506 min                                                            |
@@ -35,6 +35,7 @@
 
 | ID         | Início               | Fim                  | Descrição                                                                                               | Branch                    | In (≈tok) | Out (≈tok) | Min | Min (Σ) |
 | ---------- | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------- | --------- | ---------- | --- | ------- |
+| PC-INT-030 | 2026-04-06T14:47 -03 | 2026-04-06T15:11 -03 | [CSA-SPEC-021: API Gateway Kong OSS](./details/pc-int-030-spec021-kong.md) | feat/CSA-021-api-gateway-kong | ≈6.000 | ≈15.000 | 24 | 634 |
 | PC-INT-029 | 2026-04-06T12:29 -03 | 2026-04-06T13:10 -03 | [SPEC-020: Rename Portal Cateno → CSA - CatIA Super App](./details/pc-int-029-spec020-rename-csa.md) | feat/PC-020-rename-csa-super-app | ≈4.000 | ≈10.000 | 41 | 610 |
 | PC-INT-028 | 2026-04-06T06:19 -03 | 2026-04-06T06:20 -03 | [Fix: refresh token retry storm — singleton lock](./details/pc-int-028-fix-refresh-storm.md) | main | ≈2.000 | ≈3.000 | 1 | 569 |
 | PC-INT-027 | 2026-04-05T22:20 -03 | 2026-04-05T23:16 -03 | [SPEC-018: Documentação in-portal /ajuda](./details/pc-int-027-spec018-documentacao.md)                  | feat/PC-018-documentacao-portal | ≈5.000 | ≈20.000 | 56  | 568     |

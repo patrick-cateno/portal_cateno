@@ -7,20 +7,16 @@
 }
 
 portal.cateno.com.br {
-	# Rate limit global: 500 req/min por IP
-	rate_limit {remote.ip} 500r/m
-
-	# Next.js reverse proxy
-	reverse_proxy portal:3000 {
-		header_up X-Real-IP {remote.ip}
-		header_up X-Request-ID {http.request.uuid}
-
-		# SSE para o CatIA — sem buffering (OBRIGATÓRIO)
-		flush_interval -1
-	}
-
-	# Health check do gateway (não passa pelo Next.js)
+	# Health check do gateway (nao passa pelo Kong)
 	handle /healthz {
 		respond `{"status":"ok"}` 200
+	}
+
+	# Todas as requisicoes passam pelo Kong
+	reverse_proxy kong:8000 {
+		header_up X-Real-IP {remote.ip}
+
+		# SSE para o CatIA — sem buffering (OBRIGATORIO)
+		flush_interval -1
 	}
 }
