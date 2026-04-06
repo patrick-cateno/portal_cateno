@@ -1,6 +1,6 @@
 'use client';
 
-import { sidebarNavItems } from '@/config/navigation';
+import { sidebarNavItems, isDivider } from '@/config/navigation';
 import { useLayout } from '@/hooks/use-layout';
 import { cn } from '@/lib/utils';
 import { SidebarLink } from './sidebar-link';
@@ -13,10 +13,6 @@ interface SidebarProps {
 export function Sidebar({ userRoles = ['user'], className }: SidebarProps) {
   const { sidebarCollapsed } = useLayout();
 
-  const visibleItems = sidebarNavItems.filter(
-    (item) => !item.roles || item.roles.some((role) => userRoles.includes(role)),
-  );
-
   return (
     <aside
       aria-label="Navegacao principal"
@@ -27,9 +23,19 @@ export function Sidebar({ userRoles = ['user'], className }: SidebarProps) {
       )}
     >
       <nav className={cn('flex flex-col gap-1 p-3', sidebarCollapsed && 'items-center px-2')}>
-        {visibleItems.map((item) => (
-          <SidebarLink key={item.href} item={item} collapsed={sidebarCollapsed} />
-        ))}
+        {sidebarNavItems.map((item, index) => {
+          if (isDivider(item)) {
+            return (
+              <div key={`divider-${index}`} className="my-1 h-px bg-neutral-200" role="separator" />
+            );
+          }
+
+          if (item.roles && !item.roles.some((role) => userRoles.includes(role))) {
+            return null;
+          }
+
+          return <SidebarLink key={item.href} item={item} collapsed={sidebarCollapsed} />;
+        })}
       </nav>
 
       {/* Footer */}
