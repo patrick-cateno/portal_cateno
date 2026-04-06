@@ -1,6 +1,6 @@
-# Portal Cateno
+# CSA - CatIA Super App
 
-Portal centralizado de aplicações Cateno — frontend unificado para todos os microserviços.
+Super App com assistente inteligente, catálogo de aplicações e orquestração de microsserviços.
 
 ## Tech Stack
 

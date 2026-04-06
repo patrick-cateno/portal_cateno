@@ -3,7 +3,7 @@ import { siteConfig } from '@/config/site';
 
 describe('siteConfig', () => {
   it('should have a name', () => {
-    expect(siteConfig.name).toBe('Portal Cateno');
+    expect(siteConfig.name).toBe('CatIA Super App');
   });
 
   it('should have a description', () => {

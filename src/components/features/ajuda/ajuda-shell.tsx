@@ -20,7 +20,7 @@ export function AjudaShell({ isAdmin, children }: AjudaShellProps) {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-neutral-900">Central de Ajuda</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          Encontre respostas e guias de utilizacao do Portal Cateno
+          Encontre respostas e guias de utilizacao do CatIA Super App
         </p>
       </div>
 

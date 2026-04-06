@@ -7,17 +7,19 @@ export function PrimeirosPassos() {
       <SectionHeading
         id="primeiros-passos"
         title="Primeiros Passos"
-        description="Comece a utilizar o Portal Cateno"
+        description="Comece a utilizar o CatIA Super App"
       />
 
       <div className="space-y-6 text-sm leading-relaxed text-neutral-700">
         <div>
-          <h3 className="mb-2 text-base font-semibold text-neutral-900">O que e o Portal Cateno</h3>
+          <h3 className="mb-2 text-base font-semibold text-neutral-900">
+            O que e o CatIA Super App
+          </h3>
           <p>
-            O Portal Cateno e a plataforma centralizada que reune todas as aplicacoes e ferramentas
-            da Cateno em um unico ponto de acesso. Ao inves de acessar cada sistema separadamente,
-            voce encontra tudo organizado por categorias, com busca inteligente e monitoramento de
-            status em tempo real.
+            O CatIA Super App e a plataforma centralizada que reune todas as aplicacoes e
+            ferramentas da Cateno em um unico ponto de acesso. Ao inves de acessar cada sistema
+            separadamente, voce encontra tudo organizado por categorias, com busca inteligente e
+            monitoramento de status em tempo real.
           </p>
         </div>
 

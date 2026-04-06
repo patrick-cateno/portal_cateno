@@ -1,4 +1,4 @@
-name: Deploy Portal Cateno
+name: Deploy CSA - CatIA Super App
 
 on:
   push:

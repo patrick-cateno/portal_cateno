@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════
--- pg_cron Retention Policies — Portal Cateno
+-- pg_cron Retention Policies — CSA - CatIA Super App
 -- PC-SPEC-008 Section 6
 -- ═══════════════════════════════════════════
 -- Prerequisites: CREATE EXTENSION IF NOT EXISTS pg_cron;
