@@ -29,6 +29,10 @@ export async function searchNode(state: GraphStateType): Promise<Partial<GraphSt
     take: 10,
   });
 
+  console.log(
+    `[catia:search] found=${apps.length} apps=${apps.map((a) => a.slug).join(', ')} | msg="${lastMessage.slice(0, 80)}"`,
+  );
+
   return {
     apps: apps.map((a) => ({ slug: a.slug, name: a.name })),
   };

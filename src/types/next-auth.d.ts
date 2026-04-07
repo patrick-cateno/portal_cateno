@@ -12,6 +12,7 @@ declare module 'next-auth' {
         canExecute: boolean;
       }>;
     } & DefaultSession['user'];
+    accessToken?: string;
     error?: string;
   }
 

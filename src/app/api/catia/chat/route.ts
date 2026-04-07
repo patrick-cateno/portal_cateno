@@ -1,12 +1,30 @@
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getGraph } from '@/lib/catia/graph';
+import { decode } from 'next-auth/jwt';
+import { cookies } from 'next/headers';
 import type { Message } from '@/types/chat';
+
+const COOKIE_NAME = 'authjs.session-token';
 
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Decode the NextAuth session cookie to extract the Keycloak access token.
+  // auth() exposes session but not the underlying JWT fields like accessToken.
+  const cookieStore = await cookies();
+  const raw = cookieStore.get(COOKIE_NAME)?.value ?? '';
+  let userToken = '';
+  if (raw) {
+    try {
+      const jwt = await decode({ token: raw, secret: process.env.AUTH_SECRET!, salt: COOKIE_NAME });
+      userToken = (jwt?.accessToken as string) ?? '';
+    } catch {
+      // decode failed — proceed without token
+    }
   }
 
   const { message, history } = (await request.json()) as {
@@ -48,7 +66,7 @@ export async function POST(request: Request) {
           ],
           userId: session.user.id,
           userRoles,
-          userToken: '', // JWT would be propagated here in production
+          userToken,
         });
 
         // Emit apps if found

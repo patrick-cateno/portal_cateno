@@ -10,7 +10,7 @@ export interface ModelConfig {
 
 export function getModelConfig(nodeKey: string): ModelConfig {
   const provider = (process.env[`CATIA_${nodeKey}_PROVIDER`] ?? 'google') as ModelProvider;
-  const model = process.env[`CATIA_${nodeKey}_MODEL`] ?? 'gemini-2.0-flash';
+  const model = process.env[`CATIA_${nodeKey}_MODEL`] ?? 'gemini-2.5-flash';
   return { provider, model };
 }
 

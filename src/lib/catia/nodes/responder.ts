@@ -26,6 +26,7 @@ export async function responderNode(state: GraphStateType): Promise<Partial<Grap
       text = block.type === 'text' ? block.text : '';
     }
 
+    console.log(`[catia:responder] response="${text.slice(0, 150)}..."`);
     return { response: text };
   } catch (err) {
     console.error('[catia:responder] Error:', err);

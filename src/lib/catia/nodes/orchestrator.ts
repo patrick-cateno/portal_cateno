@@ -28,6 +28,9 @@ export async function orchestratorNode(state: GraphStateType): Promise<Partial<G
     }
 
     const parsed = JSON.parse(text);
+    console.log(
+      `[catia:orchestrator] intent="${parsed.intent}" steps=${JSON.stringify(parsed.steps ?? [])} reasoning="${(parsed.reasoning ?? '').slice(0, 120)}"`,
+    );
     return {
       intent: parsed.intent ?? state.intent,
       plan: parsed.steps ?? [],
