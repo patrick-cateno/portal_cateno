@@ -268,7 +268,7 @@ CATIA_DOC_PROCESSOR_MODEL=claude-sonnet-4-5
 
 # Respostas simples — velocidade e custo
 CATIA_SIMPLE_RESPONSE_PROVIDER=google
-CATIA_SIMPLE_RESPONSE_MODEL=gemini-2.0-flash
+CATIA_SIMPLE_RESPONSE_MODEL=gemini-2.5-flash
 
 # API Keys
 ANTHROPIC_API_KEY=sk-ant-...
@@ -287,7 +287,52 @@ GOOGLE_API_KEY=...
 - [ ] RBAC: CatIA acessa Prisma com roles do usuário
 - [ ] Integração com Tool Registry (PC-SPEC-015) via interface definida
 
-## 11. Dependências
+## 11. Notas de Implementação
+
+> Adicionado pós-verificação (2026-04-07)
+
+### 11.1 URL Rewriting para desenvolvimento local
+
+As tools registradas no banco de dados guardam URLs canônicas de produção (ex: `https://api.cateno.com.br/reservas/v1/escritorios`). Em dev, esses domínios não resolvem.
+
+**Solução:** O executor aplica rewrites em runtime via `CATIA_URL_REWRITES` (env var JSON). Se a variável não existe (prod), nenhum rewrite acontece — zero risco de URLs erradas em produção.
+
+```env
+# .env.local (somente dev)
+CATIA_URL_REWRITES={"https://api.cateno.com.br/reservas":"http://localhost:3001"}
+```
+
+### 11.2 Headers Kong em chamadas diretas (dev)
+
+Em produção, as chamadas do CatIA passam pelo Kong API Gateway, que valida o JWT e injeta headers `x-consumer-custom-id`, `x-consumer-username` e `x-authenticated-groups`. Os microsserviços autenticam via esses headers — não leem o JWT diretamente.
+
+Quando o executor detecta que uma URL foi reescrita (dev/staging bypass do Kong), ele injeta automaticamente esses headers usando o `userId` e `userRoles` do state do grafo. Isso garante que os microsserviços recebam identidade do usuário sem precisar do Kong.
+
+### 11.3 Logging estruturado do pipeline
+
+Todos os nós do grafo emitem logs com prefixo `[catia:*]` para facilitar debug:
+
+| Prefixo | O que loga |
+|---|---|
+| `[catia:intent]` | Regex match, intent classificado, mensagem |
+| `[catia:orchestrator]` | Intent refinado pelo LLM, steps, reasoning |
+| `[catia:graph]` | Roteamento intent → nó |
+| `[catia:search]` | Apps encontrados, slugs |
+| `[catia:tool-caller]` | Provider, model, tools carregadas, tool selecionada |
+| `[catia:executor]` | URL rewrite, HTTP call, status, headers injetados |
+| `[catia:responder]` | Preview da resposta |
+
+### 11.4 Modelos atualizados
+
+- Default do model-factory atualizado de `gemini-2.0-flash` (descontinuado) para `gemini-2.5-flash`
+- Tool calling em dev usa `gemini-2.5-flash` por estabilidade (Gemini 2.5 Pro pode retornar 503 em alta demanda)
+- Anthropic permanece como opção via env var para tool calling nativo
+
+### 11.5 accessToken na session NextAuth
+
+O callback `session` do NextAuth agora expõe `token.accessToken` (JWT do Keycloak) na session. Isso permite que API routes acessem o token para propagá-lo aos microsserviços em produção via Kong.
+
+## 12. Dependências
 
 - **Depende de:** PC-SPEC-005 (interface), PC-SPEC-007 (dados), PC-SPEC-002 (auth)
 - **Depende de:** PC-SPEC-015 (Tool Registry) para operações de negócio

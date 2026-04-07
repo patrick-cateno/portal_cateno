@@ -141,6 +141,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             canExecute: p.canExecute,
           })) ?? [];
 
+        if (token.accessToken) {
+          session.accessToken = token.accessToken as string;
+        }
+
         if (token.error) {
           session.error = token.error;
         }

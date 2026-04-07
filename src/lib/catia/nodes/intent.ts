@@ -14,9 +14,16 @@ export async function intentNode(state: GraphStateType): Promise<Partial<GraphSt
       help: 'help',
       general: 'general',
     };
-    return { intent: intentMap[regexIntent.type] ?? 'general' };
+    const mapped = intentMap[regexIntent.type] ?? 'general';
+    console.log(
+      `[catia:intent] regex="${regexIntent.type}" → intent="${mapped}" | msg="${lastMessage.slice(0, 80)}"`,
+    );
+    return { intent: mapped };
   }
 
   // Fallback: let orchestrator handle it
+  console.log(
+    `[catia:intent] no regex match → intent="general" | msg="${lastMessage.slice(0, 80)}"`,
+  );
   return { intent: 'general' };
 }

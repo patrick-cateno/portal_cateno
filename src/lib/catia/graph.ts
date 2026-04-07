@@ -8,18 +8,24 @@ import { docProcessorNode } from './nodes/doc-processor';
 import { responderNode } from './nodes/responder';
 
 function routeByIntent(state: GraphStateType): string {
+  let next: string;
   switch (state.intent) {
     case 'search_apps':
     case 'get_status':
     case 'navigate':
-      return 'search';
+      next = 'search';
+      break;
     case 'business_op':
-      return 'toolCaller';
+      next = 'toolCaller';
+      break;
     case 'process_doc':
-      return 'docProcessor';
+      next = 'docProcessor';
+      break;
     default:
-      return 'responder';
+      next = 'responder';
   }
+  console.log(`[catia:graph] routeByIntent intent="${state.intent}" → node="${next}"`);
+  return next;
 }
 
 export function buildGraph() {
