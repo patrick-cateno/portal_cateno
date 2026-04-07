@@ -167,6 +167,16 @@ A spec previa `PORTAL_URL=http://portal:3000` (rede Docker interna). Na prática
 
 **Correção:** `docker-compose.yml` usa `${PORTAL_URL:-http://host.docker.internal:3000}` como fallback. Em produção (profile production), o portal roda no Docker e o health-checker usa `http://portal:3000` via variável de ambiente.
 
+### Conflito de porta em dev com microsserviços locais
+
+> Adicionado pós-verificação (2026-04-07)
+
+Se um microsserviço (ex: ms-reservas) estiver rodando localmente na porta 3000 fora do Docker, ele conflita com o Next.js dev server. O health-checker, que acessa via `host.docker.internal:3000`, pode acabar falando com o microsserviço (Fastify) em vez do portal (Next.js), resultando em 404 em todas as rotas `/api/*`.
+
+**Diagnóstico:** verificar `netstat -ano | grep :3000` — se houver dois processos LISTENING, há conflito.
+
+**Solução:** usar o microsserviço via container Docker (ex: porta 3001) e manter a porta 3000 exclusiva para o Next.js dev server.
+
 ## 8. Dependências
 
 - **Depende de:** PC-SPEC-007 (endpoint /health), PC-SPEC-008 (schema AppHealth), PC-SPEC-009 (secret)

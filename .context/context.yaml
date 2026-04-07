@@ -16,8 +16,8 @@ tech_stack:
   orm: Prisma 6
   validation: Zod 3
   testing: Vitest + Testing Library
-  ai: Vercel AI SDK
-  state: Zustand
+  ai: LangGraph + Google Generative AI SDK + Anthropic SDK
+  state: React Context API
 
 architecture:
   style: Monolith modular (Next.js fullstack)
