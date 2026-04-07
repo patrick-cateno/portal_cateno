@@ -1,9 +1,12 @@
-import { auth } from '@/lib/auth';
+import { authenticateRequest } from '@/lib/api-auth';
 import { prisma } from '@/lib/db';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session?.user?.roles?.includes('admin')) {
+  const caller = await authenticateRequest(request);
+  if (!caller) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  if (!caller.roles.includes('admin') && !caller.roles.includes('admin:registry')) {
     return Response.json({ error: 'Forbidden' }, { status: 403 });
   }
 

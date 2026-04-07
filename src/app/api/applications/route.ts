@@ -1,4 +1,5 @@
 import { auth } from '@/lib/auth';
+import { authenticateRequest } from '@/lib/api-auth';
 import { prisma } from '@/lib/db';
 import { CreateApplicationSchema } from '@/lib/validations/application';
 import { Prisma } from '@prisma/client';
@@ -60,13 +61,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user) {
+  const caller = await authenticateRequest(request);
+  if (!caller) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const userRoles = session.user.roles ?? [];
-  if (!userRoles.includes('admin')) {
+  if (!caller.roles.includes('admin') && !caller.roles.includes('admin:registry')) {
     return Response.json({ error: 'Forbidden' }, { status: 403 });
   }
 
