@@ -1,4 +1,5 @@
 import { auth } from '@/lib/auth';
+import { authenticateRequest } from '@/lib/api-auth';
 import { prisma } from '@/lib/db';
 import { RegisterToolsSchema } from '@/lib/validations/tool';
 import type { Prisma } from '@prisma/client';
@@ -26,12 +27,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  // Auth: admin session OR service account via Bearer token
-  const session = await auth();
-  const authHeader = request.headers.get('authorization');
-  const isServiceAccount = authHeader === `Bearer ${process.env.HEALTH_CHECKER_SECRET}`;
+  const caller = await authenticateRequest(request);
+  if (!caller) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-  if (!isServiceAccount && !session?.user?.roles?.includes('admin')) {
+  if (!caller.roles.includes('admin') && !caller.roles.includes('admin:registry')) {
     return Response.json({ error: 'Forbidden' }, { status: 403 });
   }
 

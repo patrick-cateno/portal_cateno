@@ -26,7 +26,7 @@ export function getKeycloakLogoutUrl(postLogoutRedirectUri: string): string {
 let jwks: ReturnType<typeof jose.createRemoteJWKSet> | null = null;
 let jwksIssuer: string | null = null;
 
-function getJwks() {
+export function getJwks() {
   const issuer = getIssuer();
   if (!jwks || jwksIssuer !== issuer) {
     jwks = jose.createRemoteJWKSet(new URL(`${issuer}/protocol/openid-connect/certs`));
