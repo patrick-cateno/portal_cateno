@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db';
 
 const LOG_PREFIX = '[catia:executor]';
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Rewrite tool endpoint URLs based on CATIA_URL_REWRITES env var.
@@ -30,6 +31,43 @@ function rewriteUrl(originalUrl: string): { url: string; rewritten: boolean } {
 }
 
 /**
+ * When an action tool receives a name instead of UUID, resolve it by calling
+ * the list endpoint for the same resource and matching by "nome".
+ *
+ * E.g. endpoint "/v1/estacoes/{id}/bloquear" → list from "/v1/estacoes"
+ */
+async function resolveNameToUuid(
+  endpoint: string,
+  name: string,
+  userToken: string,
+): Promise<string | null> {
+  // Extract base resource path: "/v1/estacoes/{id}/bloquear" → "/v1/estacoes"
+  const match = endpoint.match(/^(.*?\/v1\/\w+)\//);
+  if (!match) return null;
+
+  const listEndpoint = match[1];
+  const { url: listUrl } = rewriteUrl(listEndpoint);
+
+  console.log(`${LOG_PREFIX} Auto-resolving "${name}" via ${listUrl}?limit=100`);
+
+  try {
+    const res = await fetch(`${listUrl}?limit=100&is_active=true`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+    });
+    if (!res.ok) return null;
+
+    const data = (await res.json()) as { items?: Array<{ id: string; nome: string }> };
+    const found = data.items?.find((item) => item.nome.toLowerCase() === name.toLowerCase());
+    return found?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Execute a registered tool by calling the microservice endpoint.
  *
  * In production, the call goes through Kong which validates the JWT and injects
@@ -51,16 +89,38 @@ export async function executeTool(
 
   const isBodyMethod = ['POST', 'PUT', 'PATCH'].includes(tool.method);
 
-  const { url: baseUrl } = rewriteUrl(tool.endpoint);
-  let url = baseUrl;
-  if (!isBodyMethod && Object.keys(toolInput).length > 0) {
+  // Replace {param} placeholders in URL with values from toolInput.
+  // If {id} receives a non-UUID value (e.g. a name like "101"), auto-resolve
+  // by searching the corresponding list endpoint.
+  const remainingInput: Record<string, unknown> = { ...toolInput };
+  const { url: rewrittenUrl } = rewriteUrl(tool.endpoint);
+  let url = rewrittenUrl.replace(/\{(\w+)\}/g, (_, key) => {
+    const value = remainingInput[key];
+    if (value !== undefined && value !== null) {
+      delete remainingInput[key];
+      return encodeURIComponent(String(value));
+    }
+    return `{${key}}`;
+  });
+
+  // Auto-resolve non-UUID {id} by searching the resource list endpoint
+  if (toolInput.id && !UUID_RE.test(String(toolInput.id))) {
+    const resolvedId = await resolveNameToUuid(tool.endpoint, String(toolInput.id), userToken);
+    if (resolvedId) {
+      console.log(`${LOG_PREFIX} Resolved name "${toolInput.id}" → UUID ${resolvedId}`);
+      url = url.replace(encodeURIComponent(String(toolInput.id)), resolvedId);
+    }
+  }
+
+  // Append remaining params as query string for GET/DELETE
+  if (!isBodyMethod && Object.keys(remainingInput).length > 0) {
     const params = new URLSearchParams();
-    for (const [key, value] of Object.entries(toolInput)) {
+    for (const [key, value] of Object.entries(remainingInput)) {
       if (value !== undefined && value !== null) {
         params.set(key, String(value));
       }
     }
-    url = `${baseUrl}?${params.toString()}`;
+    url = `${url}?${params.toString()}`;
   }
 
   // Kong validates the JWT and injects x-consumer-* headers.
@@ -75,7 +135,7 @@ export async function executeTool(
   const response = await fetch(url, {
     method: tool.method,
     headers,
-    ...(isBodyMethod && { body: JSON.stringify(toolInput) }),
+    ...(isBodyMethod && { body: JSON.stringify(remainingInput) }),
   });
 
   if (!response.ok) {

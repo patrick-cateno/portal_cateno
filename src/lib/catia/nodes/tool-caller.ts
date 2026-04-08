@@ -85,32 +85,78 @@ export async function toolCallerNode(state: GraphStateType): Promise<Partial<Gra
       break; // Single iteration for now; expand with tool_result feedback loop later
     }
   } else {
-    // Google fallback — no native tool calling, just ask the model which tool to use
+    // Google path — iterative tool calling with result feedback
     const model = createGoogleClient(config.model);
     const toolList = tools.map((t) => `- ${t.name}: ${t.description}`).join('\n');
 
-    const result = await model.generateContent({
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            {
-              text: `Dado as tools disponíveis:\n${toolList}\n\nPara atender: "${lastMessage}"\n\nResponda em JSON: { "tool": "nome", "input": { ... } }`,
-            },
-          ],
-        },
-      ],
-      generationConfig: { responseMimeType: 'application/json' },
-    });
+    const systemContext = `Tools disponíveis:\n${toolList}\n
+REGRAS CRÍTICAS:
+- Tools de ação (admin_bloquear_*, admin_desbloquear_*, admin_desativar_*, etc.) exigem o "id" no formato UUID.
+- Nomes como "101", "Sala Athenas", "Brasília" NÃO são UUIDs. UUID tem formato: "a1b2c3d4-e5f6-7890-1234-567890abcdef".
+- Quando o usuário mencionar um recurso pelo nome, PRIMEIRO chame a tool de listagem (listar_estacoes, listar_escritorios, etc.) para encontrar o UUID, depois chame a tool de ação.
+- Responda SEMPRE em JSON: { "tool": "nome", "input": { ... } }
+- Se não há mais ações necessárias, responda: { "done": true }`;
+
+    const conversation: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [
+      {
+        role: 'user',
+        parts: [{ text: `${systemContext}\n\nPedido do usuário: "${lastMessage}"` }],
+      },
+    ];
 
     try {
-      const parsed = JSON.parse(result.response.text());
-      if (parsed.tool) {
+      for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
+        const result = await model.generateContent({
+          contents: conversation,
+          generationConfig: { responseMimeType: 'application/json' },
+        });
+
+        const responseText = result.response.text();
+        conversation.push({ role: 'model', parts: [{ text: responseText }] });
+
+        const parsed = JSON.parse(responseText);
+        if (parsed.done || (!parsed.tool && !parsed.steps)) break;
+
+        // Support both { tool, input } and legacy { steps: [...] }
+        const step = parsed.steps?.[0] ?? parsed;
+        if (!step.tool) break;
+
         console.log(
-          `[catia:tool-caller] LLM selected tool="${parsed.tool}" input=${JSON.stringify(parsed.input ?? {})}`,
+          `[catia:tool-caller] step ${i + 1}: tool="${step.tool}" input=${JSON.stringify(step.input ?? {})}`,
         );
-        const output = await executeTool(parsed.tool, parsed.input ?? {}, state.userToken);
-        results.push({ toolName: parsed.tool, input: parsed.input ?? {}, output });
+
+        try {
+          const output = await executeTool(step.tool, step.input ?? {}, state.userToken);
+          results.push({ toolName: step.tool, input: step.input ?? {}, output });
+
+          // Feed result back to LLM for next step
+          const outputSummary = JSON.stringify(output).slice(0, 1000);
+          conversation.push({
+            role: 'user',
+            parts: [
+              {
+                text: `Resultado de ${step.tool}: ${outputSummary}\n\nSe há mais ações necessárias, responda com a próxima tool. Senão, responda { "done": true }.`,
+              },
+            ],
+          });
+        } catch (err) {
+          const errorMsg = err instanceof Error ? err.message : 'Erro desconhecido';
+          results.push({
+            toolName: step.tool,
+            input: step.input ?? {},
+            output: null,
+            error: errorMsg,
+          });
+          // Feed error back — LLM might recover
+          conversation.push({
+            role: 'user',
+            parts: [
+              {
+                text: `Erro em ${step.tool}: ${errorMsg}\n\nTente uma abordagem diferente ou responda { "done": true }.`,
+              },
+            ],
+          });
+        }
       }
     } catch (err) {
       results.push({
