@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import {
   Star,
   ArrowUpRight,
@@ -22,6 +23,7 @@ import {
   FileBarChart,
   Globe,
   Monitor,
+  CalendarDays,
   type LucideIcon,
 } from 'lucide-react';
 import { Badge } from '@/components/ui';
@@ -43,6 +45,7 @@ const iconMap: Record<string, LucideIcon> = {
   FileBarChart,
   Globe,
   Monitor,
+  CalendarDays,
 };
 
 const statusLabel: Record<ApplicationStatus, string> = {
@@ -66,16 +69,24 @@ interface Props {
 
 export function ApplicationCard({ app, isFavorited, onToggleFavorite }: Props) {
   const Icon = app.icon ? iconMap[app.icon] : null;
+  const router = useRouter();
+
+  function handleNavigate() {
+    if (app.url) {
+      router.push(app.url);
+    }
+  }
 
   return (
     <article
       role="article"
       tabIndex={0}
       className="group relative flex cursor-pointer flex-col rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all duration-150 hover:border-teal-300 hover:shadow-md focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:outline-none"
+      onClick={handleNavigate}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          // Navigate to app detail (future)
+          handleNavigate();
         }
       }}
     >

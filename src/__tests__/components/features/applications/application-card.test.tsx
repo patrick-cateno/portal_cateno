@@ -3,6 +3,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ApplicationCard } from '@/components/features/applications/application-card';
 import type { ApplicationCard as AppCardType } from '@/types';
 
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 const mockApp: AppCardType = {
   id: '1',
   name: 'Gestão de Cartões',
@@ -91,5 +96,20 @@ describe('ApplicationCard', () => {
     const app = { ...mockApp, icon: 'UnknownIcon' };
     render(<ApplicationCard app={app} isFavorited={false} onToggleFavorite={vi.fn()} />);
     expect(screen.getByText('G')).toBeInTheDocument(); // First letter of "Gestão"
+  });
+
+  it('should navigate to app url on click', () => {
+    mockPush.mockClear();
+    render(<ApplicationCard app={mockApp} isFavorited={false} onToggleFavorite={vi.fn()} />);
+    fireEvent.click(screen.getByRole('article'));
+    expect(mockPush).toHaveBeenCalledWith('/apps/gestao-cartoes');
+  });
+
+  it('should not navigate when url is null', () => {
+    mockPush.mockClear();
+    const app = { ...mockApp, url: null };
+    render(<ApplicationCard app={app} isFavorited={false} onToggleFavorite={vi.fn()} />);
+    fireEvent.click(screen.getByRole('article'));
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });
