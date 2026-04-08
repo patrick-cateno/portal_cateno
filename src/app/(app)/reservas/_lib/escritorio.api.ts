@@ -1,11 +1,17 @@
 import { reservasClient } from './client';
 import type { Escritorio, PaginatedResponse } from './types';
 
-export function listarEscritorios(token: string, page = 1, limit = 20) {
-  return reservasClient<PaginatedResponse<Escritorio>>(
-    `/v1/escritorios?page=${page}&limit=${limit}`,
-    { token },
-  );
+export function listarEscritorios(
+  token: string,
+  params: { page?: number; limit?: number; is_active?: boolean } = {},
+) {
+  const { page = 1, limit = 20, is_active } = params;
+  const qs = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    ...(is_active !== undefined ? { is_active: String(is_active) } : {}),
+  });
+  return reservasClient<PaginatedResponse<Escritorio>>(`/v1/escritorios?${qs}`, { token });
 }
 
 export function criarEscritorio(

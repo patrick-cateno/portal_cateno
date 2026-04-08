@@ -32,6 +32,19 @@ export type { CardProps } from './card';
 
 export { CatenoLogo } from './CatenoLogo';
 
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from './dialog';
+
 export { Checkbox } from './checkbox';
 export type { CheckboxProps } from './checkbox';
 

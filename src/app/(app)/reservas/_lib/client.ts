@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_MS_RESERVAS_URL ?? 'http://localhost:3001';
+const BASE_URL = process.env.NEXT_PUBLIC_MS_RESERVAS_URL ?? 'http://localhost:8000/api/reservas';
 
 export class ApiError extends Error {
   constructor(
@@ -17,6 +17,7 @@ export async function reservasClient<T>(
   init?: RequestInit & { token?: string },
 ): Promise<T> {
   const { token, ...fetchInit } = init ?? {};
+
   const res = await fetch(`${BASE_URL}${path}`, {
     ...fetchInit,
     headers: {
