@@ -32,7 +32,7 @@ export async function getChatResponse(
       ],
       userId: session.user.id,
       userRoles: dbUser?.roles.map((r) => r.name) ?? [],
-      userToken: '',
+      userToken: session.accessToken ?? '',
     });
 
     return result.response;
