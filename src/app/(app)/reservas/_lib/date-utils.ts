@@ -48,6 +48,50 @@ export function formatTimeBR(isoStr: string): string {
   return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
+/** Retorna hoje em YYYY-MM-DD — usado para salas (reserva no mesmo dia permitida) */
+export function getMinDateSala(): string {
+  return toISODate(new Date());
+}
+
+/** Converte data YYYY-MM-DD + horario HH:mm para ISO 8601 UTC */
+export function toUTCISO(dateStr: string, horario: string): string {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const [h, m] = horario.split(':').map(Number);
+  const d = new Date(year, month - 1, day, h, m, 0, 0);
+  return d.toISOString();
+}
+
+/** Formata ISO 8601 UTC → HH:mm no timezone local do browser */
+export function formatHorarioLocal(isoStr: string): string {
+  return new Date(isoStr).toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+/** Gera array de slots de 30min entre 08:00 e 17:30 */
+export function gerarSlots(): string[] {
+  const slots: string[] = [];
+  for (let h = 8; h < 18; h++) {
+    slots.push(`${String(h).padStart(2, '0')}:00`);
+    slots.push(`${String(h).padStart(2, '0')}:30`);
+  }
+  return slots;
+}
+
+/** Calcula duracao legivel entre dois horarios HH:mm → "1h30" ou "30min" */
+export function calcularDuracao(inicio: string, fim: string): string {
+  const [hi, mi] = inicio.split(':').map(Number);
+  const [hf, mf] = fim.split(':').map(Number);
+  const totalMin = hf * 60 + mf - (hi * 60 + mi);
+  if (totalMin <= 0) return '';
+  const hours = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  if (hours === 0) return `${mins}min`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h${mins.toString().padStart(2, '0')}`;
+}
+
 /** Converte Date para YYYY-MM-DD */
 function toISODate(d: Date): string {
   const year = d.getFullYear();
