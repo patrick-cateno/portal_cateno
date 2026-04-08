@@ -1,7 +1,7 @@
 import type { GraphStateType, ToolResult } from '../state';
 import { getModelConfig, createAnthropicClient, createGoogleClient } from '../model-factory';
 import { loadToolsForUser } from '../tools/registry';
-import { executeTool, type ExecuteToolContext } from '../tools/executor';
+import { executeTool } from '../tools/executor';
 import type Anthropic from '@anthropic-ai/sdk';
 
 const MAX_TOOL_ITERATIONS = 5;
@@ -28,10 +28,6 @@ export async function toolCallerNode(state: GraphStateType): Promise<Partial<Gra
 
   const lastMessage = [...state.messages].reverse().find((m) => m.role === 'user')?.content ?? '';
   const results: ToolResult[] = [];
-  const toolContext: ExecuteToolContext = {
-    userId: state.userId,
-    userRoles: state.userRoles,
-  };
 
   if (config.provider === 'anthropic') {
     const anthropic = createAnthropicClient();
@@ -69,7 +65,6 @@ export async function toolCallerNode(state: GraphStateType): Promise<Partial<Gra
               block.name,
               block.input as Record<string, unknown>,
               state.userToken,
-              toolContext,
             );
             results.push({
               toolName: block.name,
@@ -114,12 +109,7 @@ export async function toolCallerNode(state: GraphStateType): Promise<Partial<Gra
         console.log(
           `[catia:tool-caller] LLM selected tool="${parsed.tool}" input=${JSON.stringify(parsed.input ?? {})}`,
         );
-        const output = await executeTool(
-          parsed.tool,
-          parsed.input ?? {},
-          state.userToken,
-          toolContext,
-        );
+        const output = await executeTool(parsed.tool, parsed.input ?? {}, state.userToken);
         results.push({ toolName: parsed.tool, input: parsed.input ?? {}, output });
       }
     } catch (err) {

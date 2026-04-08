@@ -14,7 +14,7 @@ export function buildResponderPrompt(state: GraphStateType): string {
 
   if (state.toolResults.length > 0) {
     const results = state.toolResults
-      .map((r) => `- ${r.toolName}: ${r.error ?? JSON.stringify(r.output).slice(0, 300)}`)
+      .map((r) => `- ${r.toolName}: ${r.error ?? JSON.stringify(r.output).slice(0, 500)}`)
       .join('\n');
     context += `\nResultados de operações:\n${results}\n`;
   }
@@ -29,5 +29,6 @@ Regras:
 - Use links para apps no formato [app:slug:nome] quando mencionar uma aplicação
 - Seja direto e objetivo
 - Se houve erro em uma operação, explique de forma clara ao usuário
-- Não invente informações que não estão no contexto`;
+- Não invente informações que não estão no contexto
+- Respostas paginadas: quando o resultado contém "total" e "items", se items.length >= total a lista está COMPLETA — não diga que pode haver mais dados`;
 }

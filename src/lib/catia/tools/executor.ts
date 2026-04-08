@@ -29,12 +29,6 @@ function rewriteUrl(originalUrl: string): { url: string; rewritten: boolean } {
   return { url: originalUrl, rewritten: false };
 }
 
-export interface ExecuteToolContext {
-  userId: string;
-  userRoles: string[];
-  userName?: string;
-}
-
 /**
  * Execute a registered tool by calling the microservice endpoint.
  *
@@ -46,7 +40,6 @@ export async function executeTool(
   toolName: string,
   toolInput: Record<string, unknown>,
   userToken: string,
-  context?: ExecuteToolContext,
 ): Promise<unknown> {
   const tool = await prisma.microserviceTool.findFirst({
     where: { name: toolName, isActive: true },
@@ -58,7 +51,7 @@ export async function executeTool(
 
   const isBodyMethod = ['POST', 'PUT', 'PATCH'].includes(tool.method);
 
-  const { url: baseUrl, rewritten } = rewriteUrl(tool.endpoint);
+  const { url: baseUrl } = rewriteUrl(tool.endpoint);
   let url = baseUrl;
   if (!isBodyMethod && Object.keys(toolInput).length > 0) {
     const params = new URLSearchParams();
@@ -70,24 +63,12 @@ export async function executeTool(
     url = `${baseUrl}?${params.toString()}`;
   }
 
-  // Build headers: in production Kong injects x-consumer-* from the JWT.
-  // When URL was rewritten (dev/staging bypass), we inject them manually.
+  // Kong validates the JWT and injects x-consumer-* headers.
+  // Always send the Bearer token — Kong handles the rest.
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    Authorization: `Bearer ${userToken}`,
   };
-
-  if (rewritten && context) {
-    // Direct call to microservice — simulate Kong consumer headers
-    headers['x-consumer-custom-id'] = context.userId;
-    headers['x-consumer-username'] = context.userName ?? context.userId;
-    headers['x-authenticated-groups'] = context.userRoles.join(',');
-    console.log(
-      `${LOG_PREFIX} Injecting Kong headers: x-consumer-custom-id=${context.userId} roles=${context.userRoles.join(',')}`,
-    );
-  } else {
-    // Production path: Kong will parse this JWT and inject headers
-    headers['Authorization'] = `Bearer ${userToken}`;
-  }
 
   console.log(`${LOG_PREFIX} ${tool.method} ${url}`, JSON.stringify(toolInput));
 
