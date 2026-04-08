@@ -1,15 +1,23 @@
 import { reservasClient } from './client';
 import type { PaginatedResponse, Sala } from './types';
 
-export function listarSalas(token: string, page = 1, limit = 20) {
-  return reservasClient<PaginatedResponse<Sala>>(`/v1/salas?page=${page}&limit=${limit}`, {
-    token,
+export function listarSalas(
+  token: string,
+  params: { page?: number; limit?: number; escritorio_id?: string; is_active?: boolean } = {},
+) {
+  const { page = 1, limit = 20, escritorio_id, is_active } = params;
+  const qs = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    ...(escritorio_id ? { escritorio_id } : {}),
+    ...(is_active !== undefined ? { is_active: String(is_active) } : {}),
   });
+  return reservasClient<PaginatedResponse<Sala>>(`/v1/salas?${qs}`, { token });
 }
 
 export function criarSala(
   token: string,
-  data: { nome: string; escritorioId: string; fotoUrl?: string },
+  data: { nome: string; escritorio_id: string; foto_url?: string | null },
 ) {
   return reservasClient<Sala>('/v1/salas', {
     method: 'POST',
@@ -21,7 +29,7 @@ export function criarSala(
 export function atualizarSala(
   token: string,
   id: string,
-  data: Partial<{ nome: string; escritorioId: string; fotoUrl: string | null }>,
+  data: Partial<{ nome: string; escritorio_id: string; foto_url: string | null }>,
 ) {
   return reservasClient<Sala>(`/v1/salas/${id}`, {
     method: 'PATCH',
