@@ -55,6 +55,7 @@ export function excluirEstacao(token: string, id: string) {
 export function bloquearEstacao(token: string, id: string) {
   return reservasClient<EstacaoTrabalho>(`/v1/estacoes/${id}/bloquear`, {
     method: 'PATCH',
+    body: JSON.stringify({}),
     token,
   });
 }
@@ -62,6 +63,7 @@ export function bloquearEstacao(token: string, id: string) {
 export function desbloquearEstacao(token: string, id: string) {
   return reservasClient<EstacaoTrabalho>(`/v1/estacoes/${id}/desbloquear`, {
     method: 'PATCH',
+    body: JSON.stringify({}),
     token,
   });
 }
