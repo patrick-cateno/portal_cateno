@@ -1,14 +1,8 @@
-export default function NovaReservaEstacaoPage() {
-  return (
-    <div>
-      <h1
-        style={{ fontSize: 20, fontWeight: 600, color: '#1E293B', fontFamily: 'Inter, sans-serif' }}
-      >
-        Nova Reserva de Estação
-      </h1>
-      <p style={{ color: '#64748B', fontSize: 14, marginTop: 8, fontFamily: 'Inter, sans-serif' }}>
-        Formulário de reserva de estação será implementado em RES-FE-006.
-      </p>
-    </div>
-  );
+import { requireAuth } from '@/lib/auth-helpers';
+import { NovaReservaEstacaoClient } from '../../_components/nova-reserva-estacao/nova-reserva-estacao-client';
+
+export default async function NovaReservaEstacaoPage() {
+  const session = await requireAuth();
+
+  return <NovaReservaEstacaoClient token={session.accessToken!} userId={session.user.id} />;
 }

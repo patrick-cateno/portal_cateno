@@ -74,6 +74,12 @@ export interface ReservaSala {
   updatedAt: string;
 }
 
+export interface ReservaEstacaoComDetalhes extends ReservaEstacao {
+  estacao?: EstacaoTrabalho & {
+    escritorio?: Escritorio;
+  };
+}
+
 export interface DisponibilidadeEstacao {
   escritorioId: string;
   data: string;
