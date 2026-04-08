@@ -1,14 +1,8 @@
-export default function EscritoriosAdminPage() {
-  return (
-    <div>
-      <h1
-        style={{ fontSize: 20, fontWeight: 600, color: '#1E293B', fontFamily: 'Inter, sans-serif' }}
-      >
-        Escritórios
-      </h1>
-      <p style={{ color: '#64748B', fontSize: 14, marginTop: 8, fontFamily: 'Inter, sans-serif' }}>
-        Gestão de escritórios será implementada em RES-FE-002.
-      </p>
-    </div>
-  );
+import { requireRole } from '@/lib/auth-helpers';
+import { EscritoriosPageClient } from '../../_components/escritorios/escritorios-page-client';
+
+export default async function EscritoriosAdminPage() {
+  const session = await requireRole('admin');
+
+  return <EscritoriosPageClient token={session.accessToken!} />;
 }
