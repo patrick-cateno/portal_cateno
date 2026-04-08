@@ -74,6 +74,12 @@ export interface ReservaSala {
   updatedAt: string;
 }
 
+export interface ReservaSalaComDetalhes extends ReservaSala {
+  sala?: Sala & {
+    escritorio?: Escritorio;
+  };
+}
+
 export interface ReservaEstacaoComDetalhes extends ReservaEstacao {
   estacao?: EstacaoTrabalho & {
     escritorio?: Escritorio;
