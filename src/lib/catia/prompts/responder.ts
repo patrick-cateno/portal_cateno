@@ -14,7 +14,16 @@ export function buildResponderPrompt(state: GraphStateType): string {
 
   if (state.toolResults.length > 0) {
     const results = state.toolResults
-      .map((r) => `- ${r.toolName}: ${r.error ?? JSON.stringify(r.output).slice(0, 500)}`)
+      .map((r) => {
+        if (r.error) return `- ${r.toolName}: ${r.error}`;
+        const out = r.output as Record<string, unknown> | null;
+        if (out && typeof out === 'object' && 'total' in out && 'items' in out) {
+          const { items, ...meta } = out;
+          const itemsJson = JSON.stringify(items).slice(0, 600);
+          return `- ${r.toolName}: ${JSON.stringify(meta)} items=${itemsJson}`;
+        }
+        return `- ${r.toolName}: ${JSON.stringify(out).slice(0, 800)}`;
+      })
       .join('\n');
     context += `\nResultados de operações:\n${results}\n`;
   }
