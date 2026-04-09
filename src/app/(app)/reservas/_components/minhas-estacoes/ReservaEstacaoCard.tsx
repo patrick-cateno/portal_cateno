@@ -26,8 +26,9 @@ export function ReservaEstacaoCard({
 }: ReservaEstacaoCardProps) {
   const badge = badgeConfig[reserva.situacao] ?? badgeConfig.confirmada;
   const today = getToday();
-  const reservaIsToday = isToday(reserva.dataReserva);
-  const reservaIsFuture = reserva.dataReserva >= today;
+  const dataPart = reserva.dataReserva.slice(0, 10);
+  const reservaIsToday = isToday(dataPart);
+  const reservaIsFuture = dataPart >= today;
 
   const showCheckin =
     reserva.situacao === 'confirmada' && reservaIsToday && !reserva.checkinRealizado;
@@ -37,8 +38,8 @@ export function ReservaEstacaoCard({
 
   const escritorioNome = reserva.estacao?.escritorio
     ? `${reserva.estacao.escritorio.cidade} — ${reserva.estacao.escritorio.nome}`
-    : '---';
-  const estacaoNome = reserva.estacao?.nome ?? '---';
+    : (reserva.escritorio_nome ?? '---');
+  const estacaoNome = reserva.estacao?.nome ?? reserva.estacao_nome ?? '---';
 
   return (
     <div

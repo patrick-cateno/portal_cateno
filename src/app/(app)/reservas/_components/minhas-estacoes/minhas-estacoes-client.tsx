@@ -57,8 +57,9 @@ export function MinhasEstacoesClient({ token }: Props) {
   // Filtro client-side por tab
   const today = getToday();
   const filteredReservas = reservas.filter((r) => {
-    if (tab === 'futuras') return r.dataReserva >= today && r.situacao === 'confirmada';
-    if (tab === 'passadas') return r.dataReserva < today;
+    const data = r.dataReserva.slice(0, 10);
+    if (tab === 'futuras') return data >= today && r.situacao === 'confirmada';
+    if (tab === 'passadas') return data < today;
     return true;
   });
 

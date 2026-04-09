@@ -25,14 +25,15 @@ export function isWeekend(dateStr: string): boolean {
   return dow === 0 || dow === 6;
 }
 
-/** Verifica se YYYY-MM-DD eh hoje */
+/** Verifica se YYYY-MM-DD ou ISO timestamp eh hoje */
 export function isToday(dateStr: string): boolean {
-  return dateStr === getToday();
+  return dateStr.slice(0, 10) === getToday();
 }
 
-/** Formata "2026-04-10" → "Sexta-feira, 10 de Abril de 2026" */
+/** Formata "2026-04-10" ou "2026-04-10T00:00:00.000Z" → "Sexta-feira, 10 de Abril de 2026" */
 export function formatDateBR(dateStr: string): string {
-  const [year, month, day] = dateStr.split('-').map(Number);
+  const datePart = dateStr.slice(0, 10);
+  const [year, month, day] = datePart.split('-').map(Number);
   const d = new Date(year, month - 1, day);
   return new Intl.DateTimeFormat('pt-BR', {
     weekday: 'long',
