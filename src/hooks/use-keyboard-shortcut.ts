@@ -10,6 +10,7 @@ interface ShortcutOptions {
 export function useKeyboardShortcut({ key, meta, ctrl, callback }: ShortcutOptions) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      if (!event.key) return;
       const isMeta = meta ? event.metaKey : true;
       const isCtrl = ctrl ? event.ctrlKey : true;
 
@@ -28,6 +29,7 @@ export function useKeyboardShortcut({ key, meta, ctrl, callback }: ShortcutOptio
 export function useCmdK(callback: () => void) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      if (!event.key) return;
       if (event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         callback();
