@@ -53,7 +53,6 @@ async function resolveNameToUuid(
   try {
     const res = await fetch(`${listUrl}?limit=100&is_active=true`, {
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${userToken}`,
       },
     });
@@ -125,8 +124,10 @@ export async function executeTool(
 
   // Kong validates the JWT and injects x-consumer-* headers.
   // Always send the Bearer token — Kong handles the rest.
+  // Only set Content-Type when there's a body — ms-reservas rejects
+  // Content-Type: application/json with an empty body.
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isBodyMethod ? { 'Content-Type': 'application/json' } : {}),
     Authorization: `Bearer ${userToken}`,
   };
 

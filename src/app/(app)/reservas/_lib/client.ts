@@ -18,10 +18,12 @@ export async function reservasClient<T>(
 ): Promise<T> {
   const { token, ...fetchInit } = init ?? {};
 
+  const hasBody = fetchInit.body !== undefined && fetchInit.body !== null;
+
   const res = await fetch(`${BASE_URL}${path}`, {
     ...fetchInit,
     headers: {
-      'Content-Type': 'application/json',
+      ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...fetchInit.headers,
     },
