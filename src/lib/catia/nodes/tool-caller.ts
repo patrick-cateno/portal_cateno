@@ -6,6 +6,29 @@ import type Anthropic from '@anthropic-ai/sdk';
 
 const MAX_TOOL_ITERATIONS = 5;
 
+/** Retorna contexto de data/hora em America/Sao_Paulo para o LLM */
+function getDateTimeContext(): string {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'long',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const today = now.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+  const tomorrow = new Date(today + 'T12:00:00');
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+
+  return `Data e hora atual (America/Sao_Paulo): ${formatter.format(now)}
+Hoje: ${today}
+Amanhã: ${tomorrowStr}
+IMPORTANTE: Sempre use o timezone America/Sao_Paulo para interpretar datas relativas como "hoje", "amanhã", "semana que vem". Datas devem ser enviadas no formato YYYY-MM-DD.`;
+}
+
 export async function toolCallerNode(state: GraphStateType): Promise<Partial<GraphStateType>> {
   const config = getModelConfig('TOOL_CALL');
   const tools = await loadToolsForUser(state.userRoles);
@@ -40,10 +63,13 @@ export async function toolCallerNode(state: GraphStateType): Promise<Partial<Gra
 
     const messages: Anthropic.Messages.MessageParam[] = [{ role: 'user', content: lastMessage }];
 
+    const systemPrompt = getDateTimeContext();
+
     for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
       const response = await anthropic.messages.create({
         model: config.model,
         max_tokens: 4096,
+        system: systemPrompt,
         tools: anthropicTools,
         messages,
       });
@@ -89,7 +115,8 @@ export async function toolCallerNode(state: GraphStateType): Promise<Partial<Gra
     const model = createGoogleClient(config.model);
     const toolList = tools.map((t) => `- ${t.name}: ${t.description}`).join('\n');
 
-    const systemContext = `Tools disponíveis:\n${toolList}\n
+    const dateContext = getDateTimeContext();
+    const systemContext = `${dateContext}\n\nTools disponíveis:\n${toolList}\n
 REGRAS CRÍTICAS:
 - Tools de ação (admin_bloquear_*, admin_desbloquear_*, admin_desativar_*, etc.) exigem o "id" no formato UUID.
 - Nomes como "101", "Sala Athenas", "Brasília" NÃO são UUIDs. UUID tem formato: "a1b2c3d4-e5f6-7890-1234-567890abcdef".
