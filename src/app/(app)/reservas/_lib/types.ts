@@ -84,6 +84,10 @@ export interface ReservaEstacaoComDetalhes extends ReservaEstacao {
   estacao?: EstacaoTrabalho & {
     escritorio?: Escritorio;
   };
+  // Campos flat retornados pelo endpoint /minhas
+  estacao_nome?: string;
+  escritorio_id?: string;
+  escritorio_nome?: string;
 }
 
 export interface DisponibilidadeEstacao {
