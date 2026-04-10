@@ -1,18 +1,21 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { RotateCcw } from 'lucide-react';
-import { getChatResponse } from '@/app/(app)/catia/actions';
+import { History, RotateCcw } from 'lucide-react';
+import { getChatResponse, getConversationMessages } from '@/app/(app)/catia/actions';
 import { WelcomeScreen } from './welcome-screen';
 import { MessageBubble } from './message-bubble';
 import { TypingIndicator } from './typing-indicator';
 import { ChatInput } from './chat-input';
+import { ConversationList } from './conversation-list';
 import type { Message } from '@/types/chat';
 
 export function CatiaView() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'chat' | 'history'>('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -39,15 +42,16 @@ export function CatiaView() {
       setIsLoading(true);
 
       try {
-        const response = await getChatResponse(
-          messages.slice(-19), // Keep last 19 + current = 20
-          content.trim(),
-        );
+        const result = await getChatResponse(messages.slice(-19), content.trim(), conversationId);
+
+        if (!conversationId) {
+          setConversationId(result.conversationId);
+        }
 
         const aiMessage: Message = {
           id: crypto.randomUUID(),
           role: 'assistant',
-          content: response,
+          content: result.response,
           timestamp: new Date(),
         };
 
@@ -65,7 +69,7 @@ export function CatiaView() {
         setIsLoading(false);
       }
     },
-    [isLoading, messages],
+    [isLoading, messages, conversationId],
   );
 
   const handleQuickAction = useCallback(
@@ -78,9 +82,28 @@ export function CatiaView() {
   const handleNewConversation = useCallback(() => {
     setMessages([]);
     setInput('');
+    setConversationId(null);
+    setActiveTab('chat');
+  }, []);
+
+  const handleResumeConversation = useCallback(async (id: string) => {
+    try {
+      const msgs = await getConversationMessages(id);
+      setMessages(msgs);
+      setConversationId(id);
+      setActiveTab('chat');
+    } catch {
+      // If conversation fails to load, stay on history
+    }
   }, []);
 
   const hasMessages = messages.length > 0;
+
+  if (activeTab === 'history') {
+    return (
+      <ConversationList onResume={handleResumeConversation} onBack={() => setActiveTab('chat')} />
+    );
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -91,14 +114,24 @@ export function CatiaView() {
             <h2 className="text-lg font-semibold text-neutral-900">CatIA</h2>
             <p className="text-xs text-neutral-500">Assistente de aplicações</p>
           </div>
-          <button
-            type="button"
-            onClick={handleNewConversation}
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-neutral-600 transition-colors hover:bg-neutral-100"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Nova conversa
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setActiveTab('history')}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-neutral-600 transition-colors hover:bg-neutral-100"
+            >
+              <History className="h-4 w-4" />
+              Histórico
+            </button>
+            <button
+              type="button"
+              onClick={handleNewConversation}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-neutral-600 transition-colors hover:bg-neutral-100"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Nova conversa
+            </button>
+          </div>
         </div>
       )}
 
@@ -119,7 +152,10 @@ export function CatiaView() {
           </div>
         </div>
       ) : (
-        <WelcomeScreen onQuickAction={handleQuickAction} />
+        <WelcomeScreen
+          onQuickAction={handleQuickAction}
+          onOpenHistory={() => setActiveTab('history')}
+        />
       )}
 
       {/* Input */}

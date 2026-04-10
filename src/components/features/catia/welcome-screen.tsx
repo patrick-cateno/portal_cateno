@@ -1,9 +1,10 @@
 'use client';
 
-import { Sparkles, Activity, Star, Shield, HelpCircle } from 'lucide-react';
+import { Sparkles, Activity, Star, Shield, HelpCircle, History } from 'lucide-react';
 
 interface Props {
   onQuickAction: (prompt: string) => void;
+  onOpenHistory?: () => void;
 }
 
 const quickActions = [
@@ -29,7 +30,7 @@ const quickActions = [
   },
 ];
 
-export function WelcomeScreen({ onQuickAction }: Props) {
+export function WelcomeScreen({ onQuickAction, onOpenHistory }: Props) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-16">
       <Sparkles className="h-16 w-16 text-teal-600" />
@@ -52,6 +53,17 @@ export function WelcomeScreen({ onQuickAction }: Props) {
           </button>
         ))}
       </div>
+
+      {onOpenHistory && (
+        <button
+          type="button"
+          onClick={onOpenHistory}
+          className="mt-6 flex items-center gap-1.5 text-sm text-neutral-500 transition-colors hover:text-teal-600"
+        >
+          <History className="h-4 w-4" />
+          Ver conversas anteriores
+        </button>
+      )}
     </div>
   );
 }
