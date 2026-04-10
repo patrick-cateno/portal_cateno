@@ -43,3 +43,21 @@ export function excluirEscritorio(token: string, id: string) {
     token,
   });
 }
+
+export async function uploadPlantaBaixa(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch('/api/upload/escritorios', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: 'Falha no upload' }));
+    throw new Error(err.message);
+  }
+
+  const data = (await res.json()) as { url: string };
+  return data.url;
+}

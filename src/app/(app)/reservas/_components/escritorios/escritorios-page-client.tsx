@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import {
   Building2,
   ChevronLeft,
@@ -9,6 +10,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Upload,
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -34,6 +36,7 @@ import {
   criarEscritorio,
   atualizarEscritorio,
   excluirEscritorio,
+  uploadPlantaBaixa,
 } from '../../_lib/escritorio.api';
 import type { Escritorio } from '../../_lib/types';
 
@@ -64,6 +67,11 @@ export function EscritoriosPageClient({ token }: Props) {
   const [formCidade, setFormCidade] = useState('');
   const [formPlantaUrl, setFormPlantaUrl] = useState('');
   const [formUrlError, setFormUrlError] = useState('');
+  const [plantaMode, setPlantaMode] = useState<'url' | 'upload'>('url');
+  const [formFile, setFormFile] = useState<File | null>(null);
+  const [formFilePreview, setFormFilePreview] = useState('');
+  const [formFileError, setFormFileError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<Escritorio | null>(null);
@@ -105,12 +113,20 @@ export function EscritoriosPageClient({ token }: Props) {
   const rangeEnd = Math.min(page * PAGE_SIZE, total);
 
   // Modal helpers
+  function resetPlantaState() {
+    setFormPlantaUrl('');
+    setFormUrlError('');
+    setFormFile(null);
+    setFormFilePreview('');
+    setFormFileError('');
+    setPlantaMode('url');
+  }
+
   function openCreate() {
     setEditando(null);
     setFormNome('');
     setFormCidade('');
-    setFormPlantaUrl('');
-    setFormUrlError('');
+    resetPlantaState();
     setModalOpen(true);
   }
 
@@ -118,24 +134,58 @@ export function EscritoriosPageClient({ token }: Props) {
     setEditando(esc);
     setFormNome(esc.nome);
     setFormCidade(esc.cidade);
+    resetPlantaState();
     setFormPlantaUrl(esc.plantaBaixaUrl ?? '');
-    setFormUrlError('');
     setModalOpen(true);
   }
 
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setFormFileError('Tipo não permitido. Use JPEG, PNG ou WebP.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setFormFileError('Arquivo excede o limite de 5 MB.');
+      return;
+    }
+
+    setFormFileError('');
+    setFormFile(file);
+    setFormFilePreview(URL.createObjectURL(file));
+  }
+
+  function clearFile() {
+    setFormFile(null);
+    setFormFilePreview('');
+    setFormFileError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
   async function handleSave() {
-    // Validate URL
-    if (formPlantaUrl && !formPlantaUrl.startsWith('https://')) {
+    // Validate URL mode
+    if (plantaMode === 'url' && formPlantaUrl && !formPlantaUrl.startsWith('https://')) {
       setFormUrlError('URL deve começar com https://');
       return;
     }
 
     setSaving(true);
     try {
+      let plantaUrl: string | null = null;
+
+      if (plantaMode === 'upload' && formFile) {
+        plantaUrl = await uploadPlantaBaixa(formFile);
+      } else if (plantaMode === 'url' && formPlantaUrl) {
+        plantaUrl = formPlantaUrl;
+      }
+
       const body = {
         nome: formNome,
         cidade: formCidade,
-        planta_baixa_url: formPlantaUrl || null,
+        planta_baixa_url: plantaUrl,
       };
 
       if (editando) {
@@ -568,17 +618,180 @@ export function EscritoriosPageClient({ token }: Props) {
               placeholder="Ex: São Paulo"
               required
             />
-            <Input
-              label="URL da Planta Baixa"
-              value={formPlantaUrl}
-              onChange={(e) => {
-                setFormPlantaUrl(e.target.value);
-                setFormUrlError('');
-              }}
-              placeholder="https://..."
-              error={!!formUrlError}
-              helperText={formUrlError}
-            />
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: '#1E293B',
+                  marginBottom: 6,
+                  fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                Planta Baixa
+              </label>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 0,
+                  marginBottom: 10,
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                  border: '1px solid #E2E8F0',
+                  width: 'fit-content',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlantaMode('url');
+                    clearFile();
+                  }}
+                  style={{
+                    padding: '6px 16px',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    fontFamily: 'Inter, sans-serif',
+                    border: 'none',
+                    cursor: 'pointer',
+                    background: plantaMode === 'url' ? '#0D9488' : '#FFFFFF',
+                    color: plantaMode === 'url' ? '#FFFFFF' : '#64748B',
+                    transition: 'all 0.25s ease',
+                  }}
+                >
+                  URL
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlantaMode('upload');
+                    setFormPlantaUrl('');
+                    setFormUrlError('');
+                  }}
+                  style={{
+                    padding: '6px 16px',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    fontFamily: 'Inter, sans-serif',
+                    border: 'none',
+                    borderLeft: '1px solid #E2E8F0',
+                    cursor: 'pointer',
+                    background: plantaMode === 'upload' ? '#0D9488' : '#FFFFFF',
+                    color: plantaMode === 'upload' ? '#FFFFFF' : '#64748B',
+                    transition: 'all 0.25s ease',
+                  }}
+                >
+                  Upload
+                </button>
+              </div>
+
+              {plantaMode === 'url' ? (
+                <Input
+                  value={formPlantaUrl}
+                  onChange={(e) => {
+                    setFormPlantaUrl(e.target.value);
+                    setFormUrlError('');
+                  }}
+                  placeholder="https://..."
+                  error={!!formUrlError}
+                  helperText={formUrlError}
+                />
+              ) : (
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleFileSelect}
+                    style={{ display: 'none' }}
+                  />
+                  {formFilePreview ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <Image
+                        src={formFilePreview}
+                        alt="Preview"
+                        width={64}
+                        height={64}
+                        style={{ borderRadius: 8, objectFit: 'cover' }}
+                        unoptimized
+                      />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span
+                          style={{
+                            fontSize: 13,
+                            color: '#1E293B',
+                            fontFamily: 'Inter, sans-serif',
+                          }}
+                        >
+                          {formFile?.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={clearFile}
+                          style={{
+                            fontSize: 12,
+                            color: '#EF4444',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontFamily: 'Inter, sans-serif',
+                            textAlign: 'left',
+                            padding: 0,
+                          }}
+                        >
+                          Remover
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                        width: '100%',
+                        padding: '20px 16px',
+                        border: '2px dashed #E2E8F0',
+                        borderRadius: 8,
+                        background: '#F8FAFC',
+                        cursor: 'pointer',
+                        color: '#64748B',
+                        fontSize: 13,
+                        fontFamily: 'Inter, sans-serif',
+                        transition: 'all 0.25s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#0D9488';
+                        e.currentTarget.style.color = '#0D9488';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#E2E8F0';
+                        e.currentTarget.style.color = '#64748B';
+                      }}
+                    >
+                      <Upload size={16} />
+                      Clique para selecionar (JPEG, PNG, WebP — max 5 MB)
+                    </button>
+                  )}
+                  {formFileError && (
+                    <p
+                      style={{
+                        fontSize: 12,
+                        color: '#EF4444',
+                        marginTop: 4,
+                        fontFamily: 'Inter, sans-serif',
+                      }}
+                    >
+                      {formFileError}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setModalOpen(false)} disabled={saving}>
