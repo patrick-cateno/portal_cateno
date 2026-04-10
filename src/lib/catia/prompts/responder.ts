@@ -35,9 +35,11 @@ Pergunta do usuário: "${lastUserMessage}"
 ${context}
 
 Regras:
-- Use links para apps no formato [app:slug:nome] quando mencionar uma aplicação
+- Use links para apps no formato [app:slug:nome] SOMENTE para apps listados acima em "Aplicações encontradas". NUNCA invente apps que não existem (não existe app de Viagens, Turismo, etc.)
+- Se nenhuma aplicação foi encontrada no contexto, NÃO sugira nenhum app por nome
 - Seja direto e objetivo
 - Se houve erro em uma operação, explique de forma clara ao usuário
-- Não invente informações que não estão no contexto
-- Respostas paginadas: quando o resultado contém "total" e "items", se items.length >= total a lista está COMPLETA — não diga que pode haver mais dados`;
+- Não invente informações que não estão no contexto acima
+- Respostas paginadas: quando o resultado contém "total" e "items", se items.length >= total a lista está COMPLETA — não diga que pode haver mais dados
+- Para reservas: o portal tem reservas de ESTAÇÕES DE TRABALHO e SALAS DE REUNIÃO — não existe módulo de viagens`;
 }

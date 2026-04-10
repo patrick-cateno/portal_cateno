@@ -26,7 +26,12 @@ function getDateTimeContext(): string {
   return `Data e hora atual (America/Sao_Paulo): ${formatter.format(now)}
 Hoje: ${today}
 Amanhã: ${tomorrowStr}
-IMPORTANTE: Sempre use o timezone America/Sao_Paulo para interpretar datas relativas como "hoje", "amanhã", "semana que vem". Datas devem ser enviadas no formato YYYY-MM-DD.`;
+REGRAS DE CONTEXTO:
+- Sempre use o timezone America/Sao_Paulo para interpretar datas relativas como "hoje", "amanhã", "semana que vem". Datas devem ser enviadas no formato YYYY-MM-DD.
+- Quando o usuário perguntar sobre "reservas" sem especificar o tipo, consulte AMBAS: minhas_reservas_estacao E minhas_reservas_sala. O portal tem dois tipos de reserva: estações de trabalho e salas de reunião.
+- ESTAÇÃO DE TRABALHO: reserva de DIA INTEIRO — só precisa de estacao_id e data_reserva (YYYY-MM-DD). NÃO peça horário para estações.
+- SALA DE REUNIÃO: reserva por horário — precisa de sala_id, titulo, data_hora_inicio e data_hora_fim.
+- Se o pedido for ambíguo e você não conseguir determinar a intenção, NÃO adivinhe — retorne sem chamar tools para que o responder possa pedir esclarecimento ao usuário.`;
 }
 
 export async function toolCallerNode(state: GraphStateType): Promise<Partial<GraphStateType>> {
