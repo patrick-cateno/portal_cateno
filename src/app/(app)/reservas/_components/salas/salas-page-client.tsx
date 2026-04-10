@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import {
   Camera,
@@ -11,6 +11,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Upload,
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -31,7 +32,13 @@ import {
   DialogTitle,
   Input,
 } from '@/components/ui';
-import { listarSalas, criarSala, atualizarSala, excluirSala } from '../../_lib/sala.api';
+import {
+  listarSalas,
+  criarSala,
+  atualizarSala,
+  excluirSala,
+  uploadFotoSala,
+} from '../../_lib/sala.api';
 import { listarEscritorios } from '../../_lib/escritorio.api';
 import type { Sala, Escritorio } from '../../_lib/types';
 
@@ -65,6 +72,11 @@ export function SalasPageClient({ token }: Props) {
   const [formFotoUrl, setFormFotoUrl] = useState('');
   const [formUrlError, setFormUrlError] = useState('');
   const [formNomeError, setFormNomeError] = useState('');
+  const [fotoMode, setFotoMode] = useState<'url' | 'upload'>('url');
+  const [formFile, setFormFile] = useState<File | null>(null);
+  const [formFilePreview, setFormFilePreview] = useState('');
+  const [formFileError, setFormFileError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<Sala | null>(null);
@@ -117,13 +129,21 @@ export function SalasPageClient({ token }: Props) {
   const rangeEnd = Math.min(page * PAGE_SIZE, total);
 
   // Modal helpers
+  function resetFotoState() {
+    setFormFotoUrl('');
+    setFormUrlError('');
+    setFormFile(null);
+    setFormFilePreview('');
+    setFormFileError('');
+    setFotoMode('url');
+  }
+
   function openCreate() {
     setEditando(null);
     setFormNome('');
     setFormEscritorioId(escritorios.length === 1 ? escritorios[0].id : '');
-    setFormFotoUrl('');
-    setFormUrlError('');
     setFormNomeError('');
+    resetFotoState();
     setModalOpen(true);
   }
 
@@ -131,10 +151,36 @@ export function SalasPageClient({ token }: Props) {
     setEditando(sala);
     setFormNome(sala.nome);
     setFormEscritorioId(sala.escritorioId);
-    setFormFotoUrl(sala.fotoUrl ?? '');
-    setFormUrlError('');
     setFormNomeError('');
+    resetFotoState();
+    setFormFotoUrl(sala.fotoUrl ?? '');
     setModalOpen(true);
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setFormFileError('Tipo não permitido. Use JPEG, PNG ou WebP.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setFormFileError('Arquivo excede o limite de 5 MB.');
+      return;
+    }
+
+    setFormFileError('');
+    setFormFile(file);
+    setFormFilePreview(URL.createObjectURL(file));
+  }
+
+  function clearFile() {
+    setFormFile(null);
+    setFormFilePreview('');
+    setFormFileError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   async function handleSave() {
@@ -143,18 +189,26 @@ export function SalasPageClient({ token }: Props) {
       setFormNomeError('Nome deve ter pelo menos 2 caracteres');
       return;
     }
-    // Validate URL
-    if (formFotoUrl && !formFotoUrl.startsWith('https://')) {
+    // Validate URL mode
+    if (fotoMode === 'url' && formFotoUrl && !formFotoUrl.startsWith('https://')) {
       setFormUrlError('URL deve começar com https://');
       return;
     }
 
     setSaving(true);
     try {
+      let fotoUrl: string | null = null;
+
+      if (fotoMode === 'upload' && formFile) {
+        fotoUrl = await uploadFotoSala(formFile);
+      } else if (fotoMode === 'url' && formFotoUrl) {
+        fotoUrl = formFotoUrl;
+      }
+
       const body = {
         nome: formNome.trim(),
         escritorio_id: formEscritorioId,
-        foto_url: formFotoUrl || null,
+        foto_url: fotoUrl,
       };
 
       if (editando) {
@@ -717,17 +771,180 @@ export function SalasPageClient({ token }: Props) {
                 ))}
               </select>
             </div>
-            <Input
-              label="URL da Foto"
-              value={formFotoUrl}
-              onChange={(e) => {
-                setFormFotoUrl(e.target.value);
-                setFormUrlError('');
-              }}
-              placeholder="https://..."
-              error={!!formUrlError}
-              helperText={formUrlError}
-            />
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: '#1E293B',
+                  marginBottom: 6,
+                  fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                Foto
+              </label>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 0,
+                  marginBottom: 10,
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                  border: '1px solid #E2E8F0',
+                  width: 'fit-content',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFotoMode('url');
+                    clearFile();
+                  }}
+                  style={{
+                    padding: '6px 16px',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    fontFamily: 'Inter, sans-serif',
+                    border: 'none',
+                    cursor: 'pointer',
+                    background: fotoMode === 'url' ? '#0D9488' : '#FFFFFF',
+                    color: fotoMode === 'url' ? '#FFFFFF' : '#64748B',
+                    transition: 'all 0.25s ease',
+                  }}
+                >
+                  URL
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFotoMode('upload');
+                    setFormFotoUrl('');
+                    setFormUrlError('');
+                  }}
+                  style={{
+                    padding: '6px 16px',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    fontFamily: 'Inter, sans-serif',
+                    border: 'none',
+                    borderLeft: '1px solid #E2E8F0',
+                    cursor: 'pointer',
+                    background: fotoMode === 'upload' ? '#0D9488' : '#FFFFFF',
+                    color: fotoMode === 'upload' ? '#FFFFFF' : '#64748B',
+                    transition: 'all 0.25s ease',
+                  }}
+                >
+                  Upload
+                </button>
+              </div>
+
+              {fotoMode === 'url' ? (
+                <Input
+                  value={formFotoUrl}
+                  onChange={(e) => {
+                    setFormFotoUrl(e.target.value);
+                    setFormUrlError('');
+                  }}
+                  placeholder="https://..."
+                  error={!!formUrlError}
+                  helperText={formUrlError}
+                />
+              ) : (
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleFileSelect}
+                    style={{ display: 'none' }}
+                  />
+                  {formFilePreview ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <Image
+                        src={formFilePreview}
+                        alt="Preview"
+                        width={64}
+                        height={64}
+                        style={{ borderRadius: 8, objectFit: 'cover' }}
+                        unoptimized
+                      />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span
+                          style={{
+                            fontSize: 13,
+                            color: '#1E293B',
+                            fontFamily: 'Inter, sans-serif',
+                          }}
+                        >
+                          {formFile?.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={clearFile}
+                          style={{
+                            fontSize: 12,
+                            color: '#EF4444',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontFamily: 'Inter, sans-serif',
+                            textAlign: 'left',
+                            padding: 0,
+                          }}
+                        >
+                          Remover
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                        width: '100%',
+                        padding: '20px 16px',
+                        border: '2px dashed #E2E8F0',
+                        borderRadius: 8,
+                        background: '#F8FAFC',
+                        cursor: 'pointer',
+                        color: '#64748B',
+                        fontSize: 13,
+                        fontFamily: 'Inter, sans-serif',
+                        transition: 'all 0.25s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#0D9488';
+                        e.currentTarget.style.color = '#0D9488';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#E2E8F0';
+                        e.currentTarget.style.color = '#64748B';
+                      }}
+                    >
+                      <Upload size={16} />
+                      Clique para selecionar (JPEG, PNG, WebP — max 5 MB)
+                    </button>
+                  )}
+                  {formFileError && (
+                    <p
+                      style={{
+                        fontSize: 12,
+                        color: '#EF4444',
+                        marginTop: 4,
+                        fontFamily: 'Inter, sans-serif',
+                      }}
+                    >
+                      {formFileError}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setModalOpen(false)} disabled={saving}>

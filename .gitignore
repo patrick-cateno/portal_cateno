@@ -59,3 +59,6 @@ prisma/migrations/**/migration_lock.toml
 
 # OS
 Thumbs.db
+
+# uploads
+/uploads
