@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
-import { breadcrumbLabels } from '@/config/navigation';
+import { breadcrumbLabels, isPortalMode } from '@/config/navigation';
 import { cn } from '@/lib/utils';
 
 export function Breadcrumb({ className }: { className?: string }) {
   const pathname = usePathname();
+  const isPortal = isPortalMode(pathname);
 
   const segments = pathname
     .split('/')
@@ -21,12 +22,16 @@ export function Breadcrumb({ className }: { className?: string }) {
 
   if (segments.length === 0) return null;
 
+  // In portal mode, use "Home" as root. In micro mode, use "CSA" linking back to portal.
+  const rootLabel = isPortal ? 'Home' : 'CSA';
+  const rootHref = '/inicio';
+
   return (
     <nav aria-label="Breadcrumb" className={cn('hidden md:flex', className)}>
       <ol className="flex items-center gap-1 text-xs">
         <li>
-          <Link href="/inicio" className="text-neutral-500 hover:text-neutral-700">
-            Home
+          <Link href={rootHref} className="text-neutral-500 hover:text-neutral-700">
+            {rootLabel}
           </Link>
         </li>
         {segments.map((segment) => (

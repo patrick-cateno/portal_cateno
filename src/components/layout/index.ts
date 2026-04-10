@@ -1,5 +1,6 @@
 export { AppShell } from './app-shell';
 export { Header } from './header';
+export { TopNavBar } from './top-nav-bar';
 export { Sidebar } from './sidebar';
 export { SidebarLink } from './sidebar-link';
 export { Breadcrumb } from './breadcrumb';
