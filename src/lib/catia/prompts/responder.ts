@@ -1,11 +1,16 @@
 import type { GraphStateType } from '../state';
 import { siteConfig } from '@/config/site';
+import { buildMessageHistory } from './history';
 
 export function buildResponderPrompt(state: GraphStateType): string {
   const lastUserMessage =
     [...state.messages].reverse().find((m) => m.role === 'user')?.content ?? '';
+  const history = buildMessageHistory(state.messages);
 
   let context = '';
+  if (history) {
+    context += `\n${history}\n`;
+  }
 
   if (state.apps.length > 0) {
     const appList = state.apps.map((a) => `- ${a.name} [app:${a.slug}:${a.name}]`).join('\n');
@@ -31,7 +36,7 @@ export function buildResponderPrompt(state: GraphStateType): string {
   return `Você é o CatIA, assistente inteligente do ${siteConfig.name}.
 Responda de forma concisa e amigável em português brasileiro.
 
-Pergunta do usuário: "${lastUserMessage}"
+Mensagem atual do usuário: "${lastUserMessage}"
 ${context}
 
 Regras:

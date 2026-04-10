@@ -1,13 +1,15 @@
 import type { GraphStateType } from '../state';
 import { siteConfig } from '@/config/site';
+import { buildMessageHistory } from './history';
 
 export function buildOrchestratorPrompt(state: GraphStateType): string {
   const lastMessage = state.messages[state.messages.length - 1]?.content ?? '';
+  const history = buildMessageHistory(state.messages);
 
   return `Você é o orquestrador do CatIA, assistente inteligente do ${siteConfig.name}.
 Analise a mensagem do usuário e classifique a intenção.
-
-Mensagem: "${lastMessage}"
+${history ? `\n${history}\n` : ''}
+Mensagem atual: "${lastMessage}"
 
 Responda APENAS em JSON válido com este formato:
 {
