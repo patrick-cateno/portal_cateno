@@ -2,6 +2,7 @@ import type { GraphStateType, ToolResult } from '../state';
 import { getModelConfig, createAnthropicClient, createGoogleClient } from '../model-factory';
 import { loadToolsForUser } from '../tools/registry';
 import { executeTool } from '../tools/executor';
+import { buildAnthropicHistory, buildGoogleHistory } from '../prompts/history';
 import type Anthropic from '@anthropic-ai/sdk';
 
 const MAX_TOOL_ITERATIONS = 5;
@@ -66,7 +67,11 @@ export async function toolCallerNode(state: GraphStateType): Promise<Partial<Gra
       input_schema: t.input_schema as Anthropic.Messages.Tool.InputSchema,
     }));
 
-    const messages: Anthropic.Messages.MessageParam[] = [{ role: 'user', content: lastMessage }];
+    const history = buildAnthropicHistory(state.messages);
+    const messages: Anthropic.Messages.MessageParam[] = [
+      ...history,
+      { role: 'user', content: lastMessage },
+    ];
 
     const systemPrompt = getDateTimeContext();
 
@@ -129,7 +134,9 @@ REGRAS CRÍTICAS:
 - Responda SEMPRE em JSON: { "tool": "nome", "input": { ... } }
 - Se não há mais ações necessárias, responda: { "done": true }`;
 
+    const googleHistory = buildGoogleHistory(state.messages);
     const conversation: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [
+      ...googleHistory,
       {
         role: 'user',
         parts: [{ text: `${systemContext}\n\nPedido do usuário: "${lastMessage}"` }],
