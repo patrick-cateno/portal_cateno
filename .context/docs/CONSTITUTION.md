@@ -2,7 +2,7 @@
 
 > **Documento vivo.** Fonte única de verdade para regras, padrões e governança do projeto.
 > Deve ser consultado antes de qualquer implementação, correção ou versionamento.
-> Última atualização: 2026-04-03
+> Última atualização: 2026-04-11
 
 ---
 
@@ -338,8 +338,46 @@ Refs: PC-XXX
 
 ---
 
-## 8. Referências
+## 8. Arquitetura de Regras do Claude Code
 
+O ecossistema Cateno usa o Claude Code como assistente de engenharia. As regras que
+ele segue são organizadas em **3 camadas hierárquicas**:
+
+### Camada 1 — Global (`~/.claude/rules/`)
+
+15 módulos Markdown carregados automaticamente em todo projeto:
+
+| Categoria | Módulos |
+|-----------|---------|
+| **Técnicas** | `auth-jwt.md`, `database.md`, `api-contracts.md`, `stack-conventions.md`, `code-style.md`, `quality-gates.md`, `env-validation.md` |
+| **Processo** | `sdd-workflow.md`, `interaction-log.md`, `git-governance.md`, `testing.md`, `localization.md`, `security-skills.md`, `checklist-dev.md`, `checklist-pr.md` |
+
+Mudança em qualquer módulo se propaga para todos os projetos instantaneamente.
+
+### Camada 2 — Projeto (`CLAUDE.md` na raiz)
+
+Contém apenas o que é específico do projeto: stack, design tokens, auth, tipos,
+estrutura de pastas, contratos de domínio.
+
+### Camada 3 — Contexto (`.context/CLAUDE.md`)
+
+Precedência máxima. Define nome, sigla, roles, regras de negócio e ADRs.
+
+### Ferramentas
+
+| Ferramenta | Função |
+|------------|--------|
+| `/setup-microservice` | Gera CLAUDE.md + .claude/ + .context/ para novo microsserviço |
+| `/careful` | Modo cauteloso para auth e pagamentos |
+| `/simplify` | Revisão de código por qualidade e reuso |
+
+> **Documentação completa:** [Arquitetura de Regras do Claude Code](arquitetura-regras-claude-code.md)
+
+---
+
+## 9. Referências
+
+- [Arquitetura de Regras do Claude Code](arquitetura-regras-claude-code.md)
 - [Design System Cateno](../../../cateno-design-system.jsx)
 - [Log de Interações](../logs/interaction-log.md)
 - [Dotcontext](https://github.com/vinilana/dotcontext)

@@ -19,36 +19,19 @@ Violar esta separação é o erro mais grave que pode ser cometido neste projeto
 
 ---
 
-## 1. Log de Interações (OBRIGATÓRIO a cada interação)
+## 1. Processo (herdado das regras globais)
 
-**Regra absoluta**: após CADA interação significativa com o usuário (qualquer pergunta
-respondida, decisão tomada, arquivo criado/editado, revisão feita), o assistente DEVE:
+As regras de **log de interações**, **SDD/PREVC**, **localização**, **testes**,
+**governança git**, **segurança** e **checklists** são herdadas automaticamente
+de `~/.claude/rules/`. Aqui ficam apenas as especializações deste projeto:
 
-1. **Capturar timestamp de início** — executar `TZ="America/Sao_Paulo" date` no início
-2. **Capturar timestamp de fim** — executar `TZ="America/Sao_Paulo" date` ao concluir
-3. **Adicionar entrada** em `.context/logs/interaction-log.md` (mais recente primeiro)
-4. **Criar arquivo de detalhe** em `.context/logs/details/pc-int-NNN-<slug>.md`
-5. **Atualizar resumo acumulado** (total de interações, tempo acumulado)
-6. **Marcar checkbox** na seção "Checklist da Sessão Atual" do log
-
-### Quando NÃO logar
-- Mensagens puramente conversacionais sem decisão ou artefato ("ok", "entendi")
-- Continuação direta da mesma interação sem pausa
-
-### Formato do ID
-`PC-INT-{NNN}` — sequencial, sem pular números.
+- Sigla do projeto: **PC**
+- Formato do ID de interação: `PC-INT-{NNN}`
+- Ordem de implementação das specs: SPEC-001 → SPEC-006 → SPEC-002 → SPEC-003 → SPEC-004 → SPEC-005
 
 ---
 
-## 2. Spec-Driven Development (SDD)
-
-- **Nunca implementar sem SPEC aprovada**
-- Seguir workflow PREVC: Plan → Review → Execute → Validate → Commit
-- Ordem de implementação: SPEC-001 → SPEC-006 → SPEC-002 → SPEC-003 → SPEC-004 → SPEC-005
-
----
-
-## 3. Stack obrigatória
+## 2. Stack obrigatória
 
 | Camada | Tecnologia | Restrição |
 |--------|-----------|-----------|
@@ -69,36 +52,7 @@ Antes de escrever qualquer código Next.js, ler o guia relevante em
 
 ---
 
-## 3a. Linguagem e Localização
-
-- **Interface**: Sempre em português brasileiro (pt-BR)
-- **Código**: Nomes técnicos em inglês, labels e mensagens ao usuário em português
-- **Datas**: Formato `dd/mm/yyyy` na UI — ISO 8601 internamente — Timezone: `America/Sao_Paulo`
-- **Documentação**: Português para SPECs, READMEs e docs de contexto (`.context/`)
-
----
-
-## 3b. Qualidade e Testes
-
-- Testes unitários obrigatórios para utilitários e lógica pura — usar **Vitest**
-- Toda SPEC deve definir cenários de teste **antes** da implementação
-- Zero tolerância a falhas: todos os testes devem passar antes de qualquer PR
-- **Nenhum dado mockado** deve ir para a branch `main` em serviços críticos
-- Cache deve ser **invalidado** após qualquer operação de escrita
-- Usar **Zod** para validar dados de API antes de renderizar e inputs de formulário
-
----
-
-## 3c. Governança Git
-
-- Usar **Feature Branches** obrigatoriamente: `feat/PC-XXX-NomeDaFuncionalidade`
-- **Proibido** commit direto em `main`
-- Pull Requests obrigatórios para integração — exigem aprovação de code review
-- Nenhum PR aprovado sem o checklist da seção 12 completo
-
----
-
-## 4. Design System — Tokens obrigatórios
+## 3. Design System — Tokens obrigatórios
 
 **Nunca hardcodar valores. Sempre importar de `src/tokens.ts`.**
 
@@ -145,7 +99,7 @@ lime300: "#BEF264"   // tags de ferramentas e badges
 
 ---
 
-## 5. Autenticação — Regras invioláveis
+## 4. Autenticação — Regras invioláveis
 
 ### Nunca fazer
 - Armazenar `access_token` ou `refresh_token` em `localStorage` ou `sessionStorage`
@@ -174,7 +128,7 @@ lime300: "#BEF264"   // tags de ferramentas e badges
 
 ---
 
-## 6. Service Registry — Fonte de verdade dos apps
+## 5. Service Registry — Fonte de verdade dos apps
 
 **O array `apps[]` hardcoded no código atual é temporário e deve ser removido.**
 
@@ -198,7 +152,7 @@ lime300: "#BEF264"   // tags de ferramentas e badges
 
 ---
 
-## 7. CatIA — Orquestrador de microsserviços
+## 6. CatIA — Orquestrador de microsserviços
 
 ### O que o CatIA faz
 O CatIA **não tem respostas hardcoded**. Ele:
@@ -241,7 +195,7 @@ Escrever como se explicasse para humano que nunca viu o sistema, com frases reai
 
 ---
 
-## 8. Modelo de Permissões
+## 7. Modelo de Permissões
 
 ### Roles disponíveis
 
@@ -267,7 +221,7 @@ Escrever como se explicasse para humano que nunca viu o sistema, com frases reai
 
 ---
 
-## 8b. Segurança Frontend — Regras adicionais
+## 8. Segurança Frontend — Regras adicionais
 
 - **Nunca expor chaves, secrets ou tokens de serviço no bundle client-side**
 - **Todas as URLs de API** devem ser constantes centralizadas em `src/api/constants.ts` — nunca hardcoded inline
@@ -392,77 +346,14 @@ export interface AppStatusResponse {
 
 ---
 
-## 10b. Skills de Segurança — Uso obrigatório
+## 11. Checklists
 
-As skills abaixo estão em `.context/skills/` e devem ser executadas em dois momentos:
+Os checklists pré-desenvolvimento e pré-PR são herdados de `~/.claude/rules/checklist-dev.md`
+e `~/.claude/rules/checklist-pr.md`. Usar sigla **PC** ao aplicar.
 
-### Na criação de cada SPEC
-Antes de finalizar qualquer SPEC, executar as três skills de análise:
-- `.context/skills/frontend-security-coder/` — XSS, sanitização, CSP, DOM seguro
-- `.context/skills/api-security-best-practices/` — validação de inputs, autenticação, rate limiting
-- `.context/skills/top-web-vulnerabilities/` — OWASP Top 10, injeção, exposição de dados
+### Itens adicionais específicos deste projeto (pré-PR)
 
-A SPEC deve incluir uma seção **"Considerações de Segurança"** documentando os riscos
-identificados e as mitigações adotadas. Nenhuma SPEC é aprovada sem esta seção.
-
-### Antes de declarar o desenvolvimento concluído
-Executar a skill de auditoria completa:
-- `.context/skills/security-auditor/` — revisão de controles, autenticação, autorização e proteção de dados
-
-Se a auditoria identificar vulnerabilidades, elas devem ser corrigidas e o checklist da
-seção 11 deve ser refeito. **Nenhuma entrega é aceita com vulnerabilidades abertas.**
-
----
-
-## 11. Checklist antes de iniciar o desenvolvimento
-
-**Nenhuma linha de código deve ser escrita sem estes itens confirmados.**
-
-- [ ] SPEC criada em `.context/docs/specs/backlog/pc-spec-XXX-nomeDaFuncionalidade/`
-- [ ] SPEC revisada e aprovada explicitamente (comentário de aprovação no PR da SPEC ou mensagem registrada no log)
-- [ ] Seção "Considerações de Segurança" presente na SPEC — skills em `.context/skills/frontend-security-coder/`, `api-security-best-practices/` e `top-web-vulnerabilities/` executadas
-- [ ] Plano de implementação (`pc-plan-XXX`) criado e aprovado
-- [ ] Cenários de teste (`pc-test-XXX`) definidos na SPEC antes de qualquer código
-- [ ] SPEC movida de `backlog/` para `active/`
-- [ ] Branch criada seguindo padrão `feat/PC-XXX-NomeDaFuncionalidade`
-- [ ] Log de início registrado em `.context/logs/`
-
----
-
-## 12. Checklist antes de qualquer PR
-
-**Só chegar aqui se o checklist da seção 11 estiver completo.**
-
-### Código
 - [ ] Nenhum token, cor ou espaçamento hardcoded (tudo via `src/tokens.ts`)
-- [ ] Nenhum `any` no TypeScript
-- [ ] Nenhuma chamada de fetch direta (tudo via `catFetch`)
-- [ ] Nenhum token em `localStorage` ou `sessionStorage`
-- [ ] Nenhuma decisão de autorização no frontend
+- [ ] Todas as chamadas HTTP via `catFetch` (`src/api/client.ts`)
+- [ ] Todas as URLs de API em `src/api/constants.ts`
 - [ ] Polling de health com cleanup no `useEffect`
-- [ ] Todas as URLs de API centralizadas em `src/api/constants.ts`
-- [ ] Nenhuma chave ou secret exposto no bundle client-side
-- [ ] Dados de API validados com Zod antes de renderizar
-- [ ] Nenhum dado mockado indo para `main` em serviços críticos
-
-### Testes
-- [ ] Todos os testes unitários passando — zero falhas (`vitest run`)
-- [ ] Todos os testes de regressão passando sem quebra (`vitest run --reporter=verbose`)
-- [ ] Cache invalidado após operações de escrita testadas
-
-### Documentos e Rastreabilidade
-- [ ] SPEC aprovada antes da implementação
-- [ ] SPEC movida de `backlog/` para `active/` no início · para `archive/` na conclusão
-- [ ] Todos os artefatos na pasta da SPEC ativa: task, plan, walkthrough, test
-- [ ] Rastreabilidade bidirecional: SPEC linka artefatos · artefatos linkam SPEC
-- [ ] Log de interação registrado em `.context/logs/`
-
-### Segurança
-- [ ] Skills `.context/skills/frontend-security-coder/`, `api-security-best-practices/` e `top-web-vulnerabilities/` executadas na SPEC
-- [ ] Seção "Considerações de Segurança" presente na SPEC aprovada
-- [ ] Auditoria `securityAudit` executada — nenhuma vulnerabilidade aberta
-
-### Git
-- [ ] Branch seguindo padrão `feat/PC-XXX-NomeDaFuncionalidade`
-- [ ] Nenhum commit direto em `main`
-- [ ] PR aberto com descrição referenciando o ID da SPEC
