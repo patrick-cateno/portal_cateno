@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import { LayoutProvider } from '@/hooks/use-layout';
 import { isPortalMode } from '@/config/navigation';
@@ -21,7 +22,9 @@ function AppShellInner({ children, userRoles }: AppShellProps) {
   return (
     <div className="flex h-screen flex-col">
       <SkipLink />
-      <TopNavBar />
+      <Suspense>
+        <TopNavBar />
+      </Suspense>
 
       <div className="flex flex-1 pt-[var(--header-height)]">
         <main
