@@ -24,25 +24,25 @@ export function AplicacoesView({ initialApps, initialCategories, initialFavorite
   const [search, setSearch] = useState(searchParams.get('search') ?? '');
   const [category, setCategory] = useState(searchParams.get('category') ?? 'todas');
   const [sortBy, setSortBy] = useState(searchParams.get('sort') ?? 'name');
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(
-    searchParams.get('filtro') === 'favoritos',
-  );
+  const showFavoritesOnly = searchParams.get('filtro') === 'favoritos';
   const [favoriteIds, setFavoriteIds] = useState(() => new Set(initialFavoriteIds));
 
   const debouncedSearch = useDebounce(search, 300);
 
-  // Sync state to URL
+  // Sync state to URL (favoritos is already URL-driven via searchParams)
   useEffect(() => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
     if (debouncedSearch) params.set('search', debouncedSearch);
+    else params.delete('search');
     if (category !== 'todas') params.set('category', category);
+    else params.delete('category');
     if (sortBy !== 'name') params.set('sort', sortBy);
-    if (showFavoritesOnly) params.set('filtro', 'favoritos');
+    else params.delete('sort');
 
     const query = params.toString();
     const url = query ? `${pathname}?${query}` : pathname;
     router.replace(url, { scroll: false });
-  }, [debouncedSearch, category, sortBy, showFavoritesOnly, pathname, router]);
+  }, [debouncedSearch, category, sortBy, pathname, router]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Filter and sort
   const filtered = useMemo(() => {
@@ -103,8 +103,8 @@ export function AplicacoesView({ initialApps, initialCategories, initialFavorite
     setSearch('');
     setCategory('todas');
     setSortBy('name');
-    setShowFavoritesOnly(false);
-  }, []);
+    router.replace(pathname, { scroll: false });
+  }, [router, pathname]);
 
   return (
     <div className="space-y-6">
@@ -117,7 +117,16 @@ export function AplicacoesView({ initialApps, initialCategories, initialFavorite
         sortBy={sortBy}
         onSortChange={setSortBy}
         showFavoritesOnly={showFavoritesOnly}
-        onFavoritesToggle={() => setShowFavoritesOnly((prev) => !prev)}
+        onFavoritesToggle={() => {
+          const params = new URLSearchParams(searchParams.toString());
+          if (showFavoritesOnly) {
+            params.delete('filtro');
+          } else {
+            params.set('filtro', 'favoritos');
+          }
+          const query = params.toString();
+          router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+        }}
         filteredCount={filtered.length}
         totalCount={initialApps.length}
       />
