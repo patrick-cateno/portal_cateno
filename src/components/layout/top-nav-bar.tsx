@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Menu, HelpCircle } from 'lucide-react';
 import { CatenoLogo } from '@/components/ui';
 import { useLayout } from '@/hooks/use-layout';
@@ -14,8 +14,10 @@ import { UserDropdown } from './user-dropdown';
 
 export function TopNavBar({ className }: { className?: string }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { openMobileDrawer } = useLayout();
   const isPortal = isPortalMode(pathname);
+  const fullPath = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
 
   return (
     <header
@@ -51,9 +53,12 @@ export function TopNavBar({ className }: { className?: string }) {
         {isPortal ? (
           <nav className="hidden items-center gap-1 md:flex" aria-label="Navegação principal">
             {portalNavItems.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== '/inicio' && pathname.startsWith(item.href.split('?')[0]));
+              const hasQuery = item.href.includes('?');
+              // Exact match for query-param items (Favoritos), startsWith for others
+              const isActive = hasQuery
+                ? fullPath === item.href
+                : pathname === item.href ||
+                  (item.href !== '/inicio' && pathname.startsWith(item.href));
 
               return (
                 <Link
