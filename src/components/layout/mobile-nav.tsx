@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as LucideIcons from 'lucide-react';
-import { mobileNavItems } from '@/config/navigation';
+import { portalNavItems } from '@/config/navigation';
 import { useLayout } from '@/hooks/use-layout';
 import { cn } from '@/lib/utils';
 
@@ -19,7 +19,7 @@ export function MobileNav({ className }: { className?: string }) {
         className,
       )}
     >
-      {mobileNavItems.map((item) => {
+      {portalNavItems.map((item) => {
         const Icon =
           (LucideIcons as unknown as Record<string, LucideIcons.LucideIcon>)[item.icon] ??
           LucideIcons.Circle;

@@ -32,6 +32,30 @@ export const mainNavItems: NavItem[] = [
   },
 ];
 
+/** Top nav pills — portal mode navigation */
+export const portalNavItems: NavItem[] = [
+  { label: 'Início', href: '/inicio', icon: 'Home' },
+  { label: 'Aplicações', href: '/aplicacoes', icon: 'Grid3X3' },
+  { label: 'CatIA', href: '/catia', icon: 'MessageSquare' },
+  { label: 'Favoritos', href: '/aplicacoes?filtro=favoritos', icon: 'Star' },
+];
+
+/** Routes that use portal mode (no sidebar, top nav with pills) */
+export const portalRoutes = [
+  '/inicio',
+  '/aplicacoes',
+  '/catia',
+  '/favoritos',
+  '/suporte',
+  '/ajuda',
+];
+
+/** Check if a pathname is in portal mode */
+export function isPortalMode(pathname: string): boolean {
+  if (pathname === '/') return true;
+  return portalRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
+}
+
 /** Sidebar navigation — secondary navigation */
 export const sidebarNavItems: SidebarItem[] = [
   {
@@ -85,6 +109,15 @@ export const breadcrumbLabels: Record<string, string> = {
   favoritos: 'Favoritos',
   ajuda: 'Ajuda',
   usuario: 'Guia do Usuario',
+  reservas: 'Reservas',
+  'minhas-estacoes': 'Minhas Estações',
+  'minhas-salas': 'Minhas Salas',
+  'nova-reserva-estacao': 'Nova Reserva de Estação',
+  'nova-reserva-sala': 'Nova Reserva de Sala',
+  escritorios: 'Escritórios',
+  salas: 'Salas',
+  estacoes: 'Estações',
+  feriados: 'Feriados',
 };
 
 /** View modes for the header toggle */

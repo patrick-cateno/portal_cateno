@@ -1,10 +1,12 @@
 'use client';
 
-import { LayoutProvider, useLayout } from '@/hooks/use-layout';
+import { Suspense } from 'react';
+import { usePathname } from 'next/navigation';
+import { LayoutProvider } from '@/hooks/use-layout';
+import { isPortalMode } from '@/config/navigation';
 import { cn } from '@/lib/utils';
 import { SkipLink } from './skip-link';
-import { Header } from './header';
-import { Sidebar } from './sidebar';
+import { TopNavBar } from './top-nav-bar';
 import { MobileNav } from './mobile-nav';
 import { MobileDrawer } from './mobile-drawer';
 
@@ -14,25 +16,22 @@ interface AppShellProps {
 }
 
 function AppShellInner({ children, userRoles }: AppShellProps) {
-  const { sidebarCollapsed } = useLayout();
+  const pathname = usePathname();
+  const isPortal = isPortalMode(pathname);
 
   return (
     <div className="flex h-screen flex-col">
       <SkipLink />
-      <Header />
+      <Suspense>
+        <TopNavBar />
+      </Suspense>
 
       <div className="flex flex-1 pt-[var(--header-height)]">
-        <Sidebar userRoles={userRoles} />
-
         <main
           id="main-content"
-          className={cn(
-            'relative z-0 flex-1 overflow-y-auto transition-[margin-left] duration-150 ease-out',
-            'pb-16 md:pb-0', // space for mobile bottom nav
-            sidebarCollapsed ? 'md:ml-[var(--sidebar-collapsed)]' : 'md:ml-[var(--sidebar-width)]',
-          )}
+          className={cn('relative z-0 flex-1 overflow-y-auto', 'pb-16 md:pb-0')}
         >
-          <div className="mx-auto max-w-7xl p-6">{children}</div>
+          <div className={cn('mx-auto p-6', isPortal ? 'max-w-6xl' : 'max-w-7xl')}>{children}</div>
         </main>
       </div>
 
