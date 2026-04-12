@@ -52,6 +52,7 @@ const config: Config = {
       logo: {
         alt: 'Cateno Logo',
         src: 'img/logo.svg',
+        srcDark: 'img/logo-dark.svg',
       },
       items: [
         {
