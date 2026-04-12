@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Teal — escala completa conforme design system Cateno */
+  --ifm-color-primary: #0d9488; /* teal-600 — COR PRINCIPAL */
+  --ifm-color-primary-dark: #0f766e; /* teal-700 — hover de botões */
+  --ifm-color-primary-darker: #115e59; /* teal-800 — texto sobre fundo claro */
+  --ifm-color-primary-darkest: #134e4a; /* teal-900 — texto forte */
+  --ifm-color-primary-light: #14b8a6; /* teal-500 — CTA secundário */
+  --ifm-color-primary-lighter: #5eead4; /* teal-300 — bordas ativas */
+  --ifm-color-primary-lightest: #99f6e4; /* teal-200 — hover leve */
+
+  /* Tipografia */
+  --ifm-font-family-base:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ifm-code-font-size: 90%;
+
+  /* Background — teal-50 como no portal */
+  --ifm-background-color: #f0fdfa;
+  --ifm-background-surface-color: #ffffff;
+
+  /* Navbar — branco com borda, igual ao portal */
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-navbar-shadow: 0 1px 0 #e2e8f0;
+
+  /* Bordas */
+  --ifm-color-emphasis-300: #e2e8f0;
+  --ifm-color-emphasis-600: #64748b;
+
+  /* Border radius — alinhado com design system */
+  --ifm-global-radius: 8px;
+  --ifm-code-border-radius: 6px;
+
+  /* Sombras */
+  --ifm-global-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --ifm-global-shadow-lw: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+
+  --docusaurus-highlighted-code-line-bg: rgba(13, 148, 136, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #2dd4bf;
+  --ifm-color-primary-dark: #14b8a6;
+  --ifm-color-primary-darker: #0d9488;
+  --ifm-color-primary-darkest: #0f766e;
+  --ifm-color-primary-light: #5eead4;
+  --ifm-color-primary-lighter: #99f6e4;
+  --ifm-color-primary-lightest: #ccfbf1;
+  --ifm-background-color: #0f172a;
+  --ifm-navbar-background-color: #1e293b;
+  --docusaurus-highlighted-code-line-bg: rgba(45, 212, 191, 0.15);
+}
+
+/* Feature cards na homepage */
+.feature-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.feature-card:hover {
+  border-color: #5eead4;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(13, 148, 136, 0.12);
+  text-decoration: none;
+  color: inherit;
+}
+
+.feature-card h3 {
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+  color: #64748b;
+  margin: 0;
+}
+
+[data-theme='dark'] .feature-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme='dark'] .feature-card:hover {
+  border-color: #2dd4bf;
+}
+
+[data-theme='dark'] .feature-card h3 {
+  color: #f8fafc;
+}
+
+[data-theme='dark'] .feature-card p {
+  color: #94a3b8;
+}
+
+/* Badges */
+.badge--lime {
+  background: #bef264;
+  color: #1e293b;
+  border-radius: 9999px;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Alert semânticas */
+.alert--success {
+  --ifm-alert-background-color: rgba(16, 185, 129, 0.1);
+}
+.alert--warning {
+  --ifm-alert-background-color: rgba(245, 158, 11, 0.1);
+}
+.alert--danger {
+  --ifm-alert-background-color: rgba(239, 68, 68, 0.1);
+}
